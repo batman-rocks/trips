@@ -8,6 +8,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
     <!-- Leaflet CSS for Maps -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.css" />
     <style>
         :root {
             --bg: #f4f4f5;
@@ -101,14 +102,18 @@
 
         .interactive-map-widget {
             width: 100%;
-            height: 280px;
+            height: 350px;
             border-radius: 12px;
             margin-bottom: 24px;
             border: 1px solid var(--border);
             box-shadow: 0 4px 15px rgba(0,0,0,0.05);
             position: relative;
             z-index: 1;
+            background: #e4e4e7;
         }
+
+        /* Hide the ugly OSRM routing instructions panel */
+        .leaflet-routing-container { display: none !important; }
 
         .map-overlay-btn {
             position: absolute;
@@ -126,10 +131,7 @@
             transition: all 0.2s;
         }
 
-        .map-overlay-btn:hover {
-            background: var(--highlight);
-            transform: translateY(-2px);
-        }
+        .map-overlay-btn:hover { background: var(--highlight); transform: translateY(-2px); color: #fff;}
 
         .weather-container { margin-bottom: 30px; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.03); border: 1px solid var(--border); background: var(--surface); }
 
@@ -224,15 +226,15 @@
                 </div>
 
                 <div id="d1-timeline" class="tab-pane active">
-                    <div class="safety-banner"><strong>Safety Protocol:</strong> High-altitude thermal shifts across Vail Pass. The descent into Moab enters a high-exposure desert basin.</div>
+                    <div class="safety-banner"><strong>Safety Protocol:</strong> High-altitude thermal shifts across Vail Pass. The descent into Moab enters a high-exposure desert basin. Hydration and cooling are paramount.</div>
                     <div class="card">
                         <div class="timeline-item">
                             <div class="time">08:00 AM</div>
-                            <div class="event"><h4>Wheels Up</h4><p>Depart early via US-24 W past Ute Pass. Trace spectacular mountain paths toward I-70 W.</p></div>
+                            <div class="event"><h4>Wheels Up</h4><p>Depart early via US-24 W past Ute Pass. Great time to dial in the morning NAC and Tongkat Ali stack while the engine warms up.</p></div>
                         </div>
                         <div class="timeline-item">
                             <div class="time">12:30 PM</div>
-                            <div class="event"><h4>Maverik Adventure's Stop <span class="tag fuel">Fuel Stop</span></h4><p>Grand Junction, CO. Fill the 36-gallon tank and stock up before hitting the remote UT-128 stretch.</p></div>
+                            <div class="event"><h4>Maverik Adventure's Stop <span class="tag fuel">Fuel Stop</span></h4><p>Grand Junction, CO. Fill the 36-gallon tank before hitting the remote UT-128 stretch.</p></div>
                         </div>
                         <div class="timeline-item">
                             <div class="time">03:30 PM</div>
@@ -322,7 +324,7 @@
                         <div class="img-frame"><img src="https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=800&q=80" alt="Snow Canyon"></div>
                         <div class="img-content">
                             <h3>Snow Canyon <span class="tag photo">2:45 PM Detour</span></h3>
-                            <p>Park the Tremor in the wide gravel pullouts against the Navajo sandstone. Plug an electric kettle into the 400W bed outlet to press an AeroPress brew while composing the landscape shots.</p>
+                            <p>Park the Tremor in the wide gravel pullouts against the Navajo sandstone. Plug an electric kettle into the 400W bed outlet, dial in the KinGrinder K6, and press an AeroPress XL brew while composing the landscape shots.</p>
                         </div>
                     </div>
                 </div>
@@ -388,7 +390,7 @@
                         <div class="img-frame"><img src="https://images.unsplash.com/photo-1629814693356-993f41ff519b?auto=format&fit=crop&w=800&q=80" alt="Valley of Fire"></div>
                         <div class="img-content">
                             <h3>Valley of Fire Loop <span class="tag photo">12:15 PM Detour</span></h3>
-                            <p>Pull into the elevated rocky overlook cutout along Mouse’s Tank Road; the dramatic winding asphalt ribbon below provides an unbeatable canvas for high-contrast vehicle portraits.</p>
+                            <p>The midday desert sun forces blinding color saturation. Pull into the elevated rocky overlook along Mouse’s Tank Road; the dramatic winding asphalt ribbon below provides an unbeatable canvas for vehicle portraits.</p>
                         </div>
                     </div>
                 </div>
@@ -444,7 +446,7 @@
                         <div class="img-frame"><img src="https://images.unsplash.com/photo-1447933601403-0c6688de566e?auto=format&fit=crop&w=800&q=80" alt="Coffee"></div>
                         <div class="img-content">
                             <h3>Mothership Coffee Roasters <span class="tag coffee">07:30 AM Coffee Stop</span></h3>
-                            <p>Pick up a highly precise manual pour-over before hitting the Mojave. Maintain biohacking routines seamlessly on the road.</p>
+                            <p>Pick up a highly precise manual pour-over before hitting the Mojave. Maintain performance routines seamlessly on the road.</p>
                         </div>
                     </div>
                 </div>
@@ -473,17 +475,18 @@
         </div>
     </div>
 
-    <!-- Leaflet JS and Weather Widget -->
+    <!-- Leaflet JS & Routing Machine -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
     <script>
         !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src='https://weatherwidget.io/js/widget.min.js';fjs.parentNode.insertBefore(js,fjs);}}(document,'script','weatherwidget-io-js');
 
-        // Initialize maps dictionary
         const maps = {};
+        const routingControls = {};
 
         function initMap(dayId, latlngs) {
             const mapEl = document.getElementById('map-' + dayId);
-            if (!mapEl || maps[dayId]) return; // Already initialized
+            if (!mapEl || maps[dayId]) return;
 
             const map = L.map('map-' + dayId, { zoomControl: false, scrollWheelZoom: false }).setView(latlngs[0], 6);
             L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
@@ -491,21 +494,40 @@
                 maxZoom: 18
             }).addTo(map);
 
-            const route = L.polyline(latlngs, {color: '#ea580c', weight: 4, opacity: 0.8}).addTo(map);
-            map.fitBounds(route.getBounds(), { padding: [30, 30] });
-            
-            // Add Start/End Markers
-            L.circleMarker(latlngs[0], {radius: 6, fillColor: '#0f172a', color: '#fff', weight: 2, fillOpacity: 1}).addTo(map);
-            L.circleMarker(latlngs[latlngs.length - 1], {radius: 6, fillColor: '#ea580c', color: '#fff', weight: 2, fillOpacity: 1}).addTo(map);
+            // Use Leaflet Routing Machine to snap to real roads
+            const waypoints = latlngs.map(ll => L.latLng(ll[0], ll[1]));
+            routingControls[dayId] = L.Routing.control({
+                waypoints: waypoints,
+                createMarker: function(i, wp, nWps) {
+                    // Only show start and end markers
+                    if (i === 0 || i === nWps - 1) {
+                        return L.circleMarker(wp.latLng, {
+                            radius: 6, 
+                            fillColor: i === 0 ? '#0f172a' : '#ea580c', 
+                            color: '#fff', 
+                            weight: 2, 
+                            fillOpacity: 1
+                        });
+                    }
+                    return null;
+                },
+                routeWhileDragging: false,
+                addWaypoints: false,
+                show: false, // Hides the instruction panel
+                lineOptions: {
+                    styles: [{color: '#ea580c', opacity: 0.8, weight: 4}]
+                }
+            }).addTo(map);
 
             maps[dayId] = map;
         }
 
+        // Expanded waypoints to ensure the route hits the scenic detours (e.g., UT-128, Valley of Fire)
         const routeData = {
-            'day1': [[38.8338, -104.8213], [38.5733, -109.5498]], // COS to Moab
-            'day2': [[38.5733, -109.5498], [37.0965, -113.5684]], // Moab to St George
-            'day3': [[37.0965, -113.5684], [36.1699, -115.1398]], // St George to Vegas
-            'day4': [[36.1699, -115.1398], [32.8328, -117.2712]]  // Vegas to La Jolla
+            'day1': [[38.8338, -104.8213], [38.9713, -109.3176], [38.5733, -109.5498]], // COS -> Cisco (UT-128) -> Moab
+            'day2': [[38.5733, -109.5498], [37.2144, -113.6402], [37.0965, -113.5684]], // Moab -> Snow Canyon -> St George
+            'day3': [[37.0965, -113.5684], [36.4385, -114.5317], [36.1699, -115.1398]], // St George -> Valley of Fire -> Vegas
+            'day4': [[36.1699, -115.1398], [34.3000, -117.4833], [32.8328, -117.2712]]  // Vegas -> Cajon Pass -> La Jolla
         };
 
         function switchDay(dayNum, navElement) {
@@ -519,7 +541,6 @@
                 const firstTabButton = activeContainer.querySelector('.tab-button');
                 if(firstTabButton) { firstTabButton.click(); }
                 
-                // Initialize/Refresh Map bounds on tab switch
                 const dayKey = 'day' + dayNum;
                 initMap(dayKey, routeData[dayKey]);
                 setTimeout(() => { maps[dayKey].invalidateSize(); }, 100);
@@ -536,7 +557,6 @@
             if(targetPane) { targetPane.classList.add('active'); }
         }
 
-        // Initialize Day 1 Map on load
         window.onload = () => {
             initMap('day1', routeData['day1']);
         };
