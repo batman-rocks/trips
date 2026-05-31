@@ -46,6 +46,19 @@
 
             --sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
             --serif: 'Newsreader', 'Iowan Old Style', Georgia, serif;
+
+            /* ---- unified app aesthetic tokens (active under body.unified) ---- */
+            --u-ink: #1a1330; --u-dim: #5b5673; --u-faint: #8e89a3;
+            --u-rule: rgba(26,19,48,0.08); --u-rule-2: rgba(26,19,48,0.16);
+            --u-brand: #b45309; --u-brand-soft: rgba(252,217,167,0.32); --u-brand-wash: rgba(254,243,226,0.55);
+            --u-warn: #dc2626; --u-good: #059669;
+            --u-accent: #0284c7; --u-accent-soft: rgba(2,132,199,0.10);
+            --u-glass-bg: rgba(255,255,255,0.80);
+            --u-glass-border: 1px solid rgba(26,19,48,0.06);
+            --u-glass-blur: blur(20px) saturate(160%);
+            --u-glass-shadow: 0 8px 32px rgba(26,19,48,0.08), 0 2px 6px rgba(26,19,48,0.04), inset 0 1px 0 rgba(255,255,255,0.8);
+            --u-sans: -apple-system, BlinkMacSystemFont, 'Inter', 'SF Pro Text', 'Segoe UI', sans-serif;
+            --u-serif: 'ET Book', 'Charter', 'Iowan Old Style', Georgia, serif;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -178,6 +191,11 @@
             position: relative;
         }
         .hero-topo { position: absolute; inset: 0; opacity: 0.16; pointer-events: none; mix-blend-mode: soft-light; }
+        .hero-scenic { isolation: isolate; }
+        .hero-scene { position: absolute; left: 0; right: 0; bottom: 0; height: 70%; min-height: 160px; pointer-events: none; overflow: hidden; z-index: 0; }
+        .hero-scene .scene-svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+        .hero-scrim { position: absolute; inset: 0; pointer-events: none; z-index: 0; background: linear-gradient(105deg, rgba(0,0,0,0.36) 0%, rgba(0,0,0,0.14) 44%, rgba(0,0,0,0) 72%), linear-gradient(0deg, rgba(0,0,0,0.18), rgba(0,0,0,0) 42%); }
+        .hero-scenic > .hero-kicker, .hero-scenic > h2, .hero-scenic > .hero-sub, .hero-scenic > .hero-stats { position: relative; z-index: 1; }
         .hero-kicker { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.16em; font-weight: 800; opacity: 0.85; }
         .hero h2 { font-size: clamp(1.7rem, 3.4vw, 2.5rem); font-weight: 900; letter-spacing: -0.035em; line-height: 1.04; margin: 8px 0 4px; position: relative; }
         .hero-sub { font-size: 0.95rem; opacity: 0.9; font-weight: 500; position: relative; }
@@ -211,6 +229,12 @@
             box-shadow: 0 6px 18px -6px rgba(0,0,0,0.5); transition: all 0.2s;
         }
         .map-cta:hover { background: var(--brand); transform: translateY(-2px); }
+        .gmap-embed { border: 1px solid var(--rule); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow-sm); margin-bottom: 22px; background: #fff; }
+        .gmap-embed-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 11px 15px; font-size: 0.82rem; font-weight: 700; color: var(--ink); border-bottom: 1px solid var(--rule); background: var(--bg-2); }
+        .gmap-embed-head a { font-size: 0.72rem; font-weight: 800; color: var(--brand); text-decoration: none; white-space: nowrap; }
+        .gmap-embed-head a:hover { text-decoration: underline; }
+        .gmap-embed iframe { width: 100%; height: 420px; border: 0; display: block; }
+        @media (max-width: 640px) { .gmap-embed iframe { height: 320px; } }
         .map-legend {
             position: absolute; top: 14px; left: 14px; z-index: 600;
             background: var(--glass-bg); -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur);
@@ -319,6 +343,7 @@
 
         /* ---------- discover / waypoints ---------- */
         .nav-badge { background: var(--brand); color: #fff; font-size: 0.6rem; font-weight: 800; border-radius: 20px; padding: 1px 7px; vertical-align: middle; align-items: center; }
+        .nav-date { font-size: 0.68rem; font-weight: 700; color: var(--ni-accent, var(--faint)); font-variant-numeric: tabular-nums; margin: 3px 0 2px; opacity: 0.85; }
         .discover-controls { display: flex; flex-direction: column; gap: 13px; margin-bottom: 20px; }
         .search-box { display: flex; align-items: center; gap: 10px; background: var(--surface); border: 1px solid var(--rule-2); border-radius: 12px; padding: 11px 15px; box-shadow: var(--shadow-sm); }
         .search-box input { border: none; outline: none; font-family: var(--sans); font-size: 0.95rem; width: 100%; background: transparent; color: var(--ink); }
@@ -512,6 +537,33 @@
         .daylight-scale { display: flex; justify-content: space-between; font-size: 0.58rem; color: var(--faint); font-weight: 700; margin-top: 7px; }
 
         .golden-chip { font-size: 0.58rem; font-weight: 800; padding: 3px 9px; border-radius: 20px; background: linear-gradient(90deg, #fde68a, #fbbf24); color: #92400e; font-variant: all-small-caps; letter-spacing: 0.05em; display: inline-flex; gap: 4px; align-items: center; }
+        .dwell-chip { font-size: 0.58rem; font-weight: 800; padding: 3px 9px; border-radius: 20px; background: #eef2ff; color: #4338ca; font-variant: all-small-caps; letter-spacing: 0.05em; display: inline-flex; gap: 4px; align-items: center; white-space: nowrap; }
+        .pace-note { font-size: 0.86rem; color: var(--dim); background: var(--bg-2); border: 1px solid var(--rule); border-radius: var(--radius-sm); padding: 11px 15px; margin-bottom: 18px; }
+        .pace-note b { color: var(--ink); font-variant-numeric: tabular-nums; }
+        .alert-chip { font-size: 0.58rem; font-weight: 800; padding: 3px 9px; border-radius: 20px; background: #fef3c7; color: #b45309; border: 1px solid #fcd34d; font-variant: all-small-caps; letter-spacing: 0.05em; display: inline-flex; gap: 4px; align-items: center; white-space: nowrap; }
+        .alert-note { display: flex; gap: 10px; align-items: flex-start; margin-top: 13px; padding: 11px 14px; background: #fffbeb; border: 1px solid #fde68a; border-left: 3px solid #f59e0b; border-radius: var(--radius-sm); font-size: 0.88rem; line-height: 1.5; color: #92400e; }
+        .alert-note .an-ic { flex: none; line-height: 1.4; }
+        .watch-card { margin-bottom: 18px; padding: 14px 16px; background: #fffbeb; border: 1px solid #fde68a; border-left: 3px solid #f59e0b; border-radius: var(--radius-sm); }
+        .watch-title { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 800; color: #b45309; margin-bottom: 8px; }
+        .watch-list { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 7px; }
+        .watch-list li { font-size: 0.88rem; line-height: 1.45; color: #92400e; }
+        .watch-card-lg { border-left: 3px solid #f59e0b; }
+        .watch-card-lg .card-title { color: #b45309; }
+        .watch-card-lg .watch-list li { color: var(--dim); }
+        .foryou-pill { font-size: 0.58rem; font-weight: 800; padding: 2px 9px; border-radius: 20px; background: linear-gradient(90deg, #fbcfe8, #fde68a); color: #9d174d; font-variant: all-small-caps; letter-spacing: 0.04em; white-space: nowrap; display: inline-flex; align-items: center; }
+        .sq-meta { display: flex; flex-wrap: wrap; gap: 6px; margin: 7px 0 2px; }
+        .sq-chip { font-size: 0.66rem; font-weight: 700; padding: 3px 9px; border-radius: 20px; background: var(--bg-2); color: var(--dim); white-space: nowrap; display: inline-flex; gap: 4px; align-items: center; }
+        .sq-chip.light { background: #fff7ed; color: #c2410c; }
+        .sq-chip.walk { background: #ecfdf5; color: #047857; }
+        .sq-card.fy { border-color: #f9a8d4; box-shadow: 0 0 0 1px #fbcfe8 inset; }
+        .sq-foryou-intro { display: block; margin-top: 6px; color: var(--dim); }
+        .coffee-vibe { font-size: 0.86rem; line-height: 1.5; color: #9a3412; margin-top: 13px; padding: 10px 14px; background: #fff7ed; border-left: 3px solid #ea580c; border-radius: var(--radius-sm); }
+        .park-chip { font-size: 0.58rem; font-weight: 800; padding: 3px 9px; border-radius: 20px; background: #dbeafe; color: #1d4ed8; border: 1px solid #bfdbfe; font-variant: all-small-caps; letter-spacing: 0.05em; display: inline-flex; gap: 4px; align-items: center; white-space: nowrap; }
+        .park-note { display: flex; gap: 10px; align-items: flex-start; margin-top: 13px; padding: 11px 14px; background: #eff6ff; border: 1px solid #bfdbfe; border-left: 3px solid #3b82f6; border-radius: var(--radius-sm); font-size: 0.88rem; line-height: 1.5; color: #1e40af; }
+        .park-note .pn-ic { flex: none; line-height: 1.4; }
+        .poi-park { font-size: 0.78rem; line-height: 1.45; color: #1e40af; margin-top: 8px; padding: 8px 11px; background: #eff6ff; border-left: 3px solid #3b82f6; border-radius: var(--radius-sm); }
+        .detour-chip { font-size: 0.58rem; font-weight: 800; padding: 3px 9px; border-radius: 20px; background: #ede9fe; color: #6d28d9; font-variant: all-small-caps; letter-spacing: 0.05em; white-space: nowrap; display: inline-flex; gap: 4px; align-items: center; }
+        .detour-note { font-size: 0.84rem; line-height: 1.5; color: #5b21b6; margin-top: 10px; padding: 9px 13px; background: #f5f3ff; border-left: 3px solid #8b5cf6; border-radius: var(--radius-sm); }
 
         /* stargazing */
         .card.stargaze { background: radial-gradient(120% 140% at 80% 0%, #1e293b, #0b1120); color: #e2e8f0; border-color: rgba(255,255,255,0.06); }
@@ -587,6 +639,75 @@
         @media (prefers-reduced-motion: reduce) {
             * { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; scroll-behavior: auto !important; }
         }
+
+        /* ---------- always-on: Discover upcoming places ---------- */
+        .upnext-fab { position: fixed; right: 20px; bottom: 20px; z-index: 60; display: inline-flex; align-items: center; gap: 8px; padding: 13px 18px; border: none; border-radius: 30px; background: var(--brand); color: #fff; font-family: var(--sans); font-size: 0.86rem; font-weight: 800; cursor: pointer; box-shadow: 0 8px 24px rgba(2,132,199,0.36); transition: transform 0.16s, box-shadow 0.16s; }
+        .upnext-fab:hover { transform: translateY(-2px); box-shadow: 0 12px 30px rgba(2,132,199,0.45); }
+        .upnext-fab .uf-ic { font-size: 1.05rem; line-height: 1; }
+        .upnext-fab .uf-dot { width: 8px; height: 8px; border-radius: 50%; background: #4ade80; box-shadow: 0 0 0 0 rgba(74,222,128,0.7); animation: ufpulse 2s infinite; }
+        @keyframes ufpulse { 0% { box-shadow: 0 0 0 0 rgba(74,222,128,0.6); } 70% { box-shadow: 0 0 0 7px rgba(74,222,128,0); } 100% { box-shadow: 0 0 0 0 rgba(74,222,128,0); } }
+        .upnext-scrim { display: none; position: fixed; inset: 0; background: rgba(28,25,23,0.4); z-index: 65; }
+        .upnext-scrim.show { display: block; }
+        .upnext-drawer { position: fixed; top: 0; right: 0; height: 100%; width: 400px; max-width: 92vw; background: var(--bg); border-left: 1px solid var(--rule); box-shadow: -12px 0 40px rgba(28,25,23,0.18); z-index: 70; transform: translateX(102%); transition: transform 0.26s cubic-bezier(0.22,1,0.36,1); display: flex; flex-direction: column; }
+        .upnext-drawer.open { transform: translateX(0); }
+        .un-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; padding: 18px 20px 14px; border-bottom: 1px solid var(--rule); }
+        .un-title { font-size: 1.02rem; font-weight: 800; color: var(--ink); }
+        .un-sub { font-size: 0.78rem; color: var(--dim); margin-top: 3px; }
+        .un-close { border: none; background: var(--bg-2); color: var(--dim); width: 32px; height: 32px; border-radius: 9px; cursor: pointer; font-size: 0.9rem; flex: none; }
+        .un-close:hover { background: var(--rule); }
+        .un-guess { margin: 14px 16px 4px; padding: 13px 15px; border-radius: var(--radius-sm); background: linear-gradient(120deg, var(--brand-wash), var(--bg-2)); border: 1px solid var(--rule); }
+        .un-guess .ug-row { display: flex; align-items: baseline; gap: 8px; font-size: 0.88rem; color: var(--ink); }
+        .un-guess .ug-row + .ug-row { margin-top: 7px; }
+        .un-guess .ug-k { font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 800; color: var(--faint); min-width: 78px; }
+        .un-guess b { font-weight: 800; }
+        .un-guess .ug-meta { color: var(--brand); font-weight: 800; font-variant-numeric: tabular-nums; white-space: nowrap; }
+        .un-list { flex: 1; overflow-y: auto; padding: 10px 16px 16px; display: flex; flex-direction: column; gap: 10px; }
+        .un-empty { font-size: 0.86rem; color: var(--dim); text-align: center; padding: 30px 12px; }
+        .un-poi { display: flex; gap: 11px; padding: 11px 12px; border: 1px solid var(--rule); border-radius: var(--radius-sm); background: var(--bg-1, #fff); }
+        .un-poi .up-ic { width: 34px; height: 34px; border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 1rem; flex: none; }
+        .un-poi h5 { font-size: 0.9rem; font-weight: 800; color: var(--ink); margin: 0 0 3px; }
+        .un-poi .up-tags { display: flex; flex-wrap: wrap; gap: 5px; align-items: center; margin-bottom: 5px; }
+        .un-poi .up-blurb { font-size: 0.78rem; color: var(--dim); line-height: 1.4; }
+        .un-dist { font-size: 0.62rem; font-weight: 800; padding: 2px 8px; border-radius: 20px; background: #e0f2fe; color: #0369a1; white-space: nowrap; font-variant-numeric: tabular-nums; }
+        .un-poi .up-act { display: flex; gap: 8px; margin-top: 8px; }
+        .un-foot { padding: 12px 16px 16px; border-top: 1px solid var(--rule); }
+        .un-refresh { width: 100%; padding: 10px; border: 1px solid var(--rule); background: var(--bg-2); color: var(--dim); border-radius: 10px; font-weight: 700; font-size: 0.82rem; cursor: pointer; }
+        .un-refresh:hover { background: var(--rule); }
+        @media (max-width: 640px) { .upnext-fab { right: 14px; bottom: 14px; padding: 12px 15px; } .upnext-fab .uf-label { display: none; } }
+
+        /* ============================================================
+           UNIFIED DESIGN  ·  Bector house style (flag: body.unified)
+           All rules scoped under body.unified \u2014 off-state is untouched.
+           ============================================================ */
+        .u-flag-toggle { position: fixed; bottom: 18px; left: 18px; z-index: 9000; display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px; background: rgba(255,255,255,0.85); backdrop-filter: blur(12px) saturate(160%); -webkit-backdrop-filter: blur(12px) saturate(160%); border: 1px solid rgba(26,19,48,0.10); border-radius: 999px; font: 700 10.5px var(--u-sans); font-variant: all-small-caps; letter-spacing: 0.08em; color: var(--ink); cursor: pointer; box-shadow: 0 4px 14px rgba(26,19,48,0.08); transition: background .2s, box-shadow .2s, transform .2s, border-color .2s; }
+        .u-flag-toggle:hover { background: rgba(255,255,255,0.95); box-shadow: 0 6px 18px rgba(26,19,48,0.12); transform: translateY(-1px); }
+        .u-flag-toggle .u-flag-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--faint); transition: background .2s, box-shadow .2s; }
+        body.unified .u-flag-toggle { border-color: rgba(180,83,9,0.30); color: var(--u-brand); }
+        body.unified .u-flag-toggle .u-flag-dot { background: var(--u-brand); box-shadow: 0 0 0 3px var(--u-brand-soft); }
+        @media (prefers-reduced-motion: reduce) { body.unified .u-magnet { transform: none !important; transition: none !important; } }
+
+        /* Up Next drawer \u2192 the one glass focus surface: glass + bento KPIs + tufte rows */
+        body.unified .upnext-drawer { background: var(--u-glass-bg); backdrop-filter: var(--u-glass-blur); -webkit-backdrop-filter: var(--u-glass-blur); border-left: var(--u-glass-border); box-shadow: var(--u-glass-shadow); }
+        body.unified .un-title { font-variant: all-small-caps; letter-spacing: 0.08em; font-weight: 800; color: var(--u-ink); }
+        body.unified .un-sub { color: var(--u-dim); }
+        /* guess block \u2192 two bento KPI tiles */
+        body.unified .un-guess { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; background: transparent; border: none; padding: 14px 16px 6px; }
+        body.unified .un-guess .ug-row { display: flex; flex-direction: column; align-items: flex-start; gap: 3px; background: #fff; border: 1px solid var(--u-rule); border-radius: 10px; padding: 10px 12px; margin: 0; transition: box-shadow .22s, border-color .22s; }
+        body.unified .un-guess .ug-row:hover { box-shadow: 0 6px 18px rgba(26,19,48,0.06); border-color: var(--u-rule-2); }
+        body.unified .un-guess .ug-k { font: 700 9.5px var(--u-sans); font-variant: all-small-caps; letter-spacing: 0.06em; color: var(--u-faint); min-width: 0; }
+        body.unified .un-guess b { font: 700 15px var(--u-sans); font-variant-numeric: tabular-nums; color: var(--u-ink); letter-spacing: -0.01em; }
+        body.unified .un-guess .ug-meta { font: 700 11px var(--u-sans); font-variant: all-small-caps; letter-spacing: 0.05em; color: var(--u-brand); }
+        /* place list \u2192 tufte rows: hairline rules, small-caps meta, brand-threaded marker */
+        body.unified .un-poi { background: transparent; border: none; border-bottom: 1px solid var(--u-rule); border-radius: 0; padding: 12px 4px; transition: background .2s; }
+        body.unified .un-poi:hover { background: rgba(26,19,48,0.02); }
+        body.unified .un-poi h5 { font: 600 14px var(--u-sans); color: var(--u-ink); }
+        body.unified .un-poi .up-blurb { color: var(--u-dim); }
+        body.unified .un-dist { background: transparent; color: var(--u-ink); font-variant-numeric: tabular-nums; font-weight: 800; padding: 0; border-radius: 0; }
+        body.unified .un-poi .foryou-pill { background: transparent; color: var(--u-brand); font-variant: all-small-caps; letter-spacing: 0.06em; padding: 0; }
+        body.unified .un-poi .foryou-pill::before { content: '\00B7 '; color: var(--u-faint); }
+        body.unified .un-poi .dwell-chip, body.unified .un-poi .park-chip, body.unified .un-poi .detour-chip { background: transparent; border: none; color: var(--u-faint); padding: 0; font-variant: all-small-caps; letter-spacing: 0.05em; }
+        body.unified .un-poi .tag { background: transparent !important; color: var(--u-dim) !important; padding: 0; font-variant: all-small-caps; letter-spacing: 0.05em; }
+        body.unified .un-refresh { font-variant: all-small-caps; letter-spacing: 0.06em; }
     </style>
 </head>
 <body>
@@ -612,6 +733,11 @@
             <input type="date" id="tripStart" value="2026-06-13">
         </div>
 
+        <div class="date-control">
+            <label for="sdNights">Nights in San Diego</label>
+            <input type="number" id="sdNights" min="0" max="21" value="1">
+        </div>
+
         <div class="progress-cluster">
             <div class="ring-wrap">
                 <svg width="46" height="46" viewBox="0 0 46 46">
@@ -634,6 +760,20 @@
         <main class="content-panel" id="content"></main>
     </div>
 
+    <button class="upnext-fab" id="upnextFab" aria-label="Discover upcoming places">
+        <span class="uf-dot"></span><span class="uf-ic">&#128205;</span><span class="uf-label">Up Next</span>
+    </button>
+    <div class="upnext-scrim" id="upnextScrim"></div>
+    <aside class="upnext-drawer" id="upnextDrawer" aria-hidden="true" aria-label="Discover upcoming places">
+        <div class="un-head">
+            <div><div class="un-title">&#128205; Discover upcoming</div><div class="un-sub" id="unStatus">Tap to find places ahead of you.</div></div>
+            <button class="un-close" id="unClose" aria-label="Close">&#10005;</button>
+        </div>
+        <div class="un-guess" id="unGuess" hidden></div>
+        <div class="un-list" id="unList"></div>
+        <div class="un-foot"><button class="un-refresh" id="unRefresh">&#8635; Refresh my location</button></div>
+    </aside>
+
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
     <script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
     <script>
@@ -654,6 +794,20 @@
 
     function gmaps(q){ return 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(q); }
     function gdir(parts){ return 'https://www.google.com/maps/dir/' + parts.map(encodeURIComponent).join('/'); }
+    // Keyless embeddable directions iframe (start + chained waypoints via output=embed).
+    function gembed(parts){
+        const enc = p => encodeURIComponent(p);
+        if(!parts || parts.length < 2) return 'https://www.google.com/maps?q=' + enc((parts && parts[0]) || '') + '&output=embed';
+        return 'https://www.google.com/maps?saddr=' + enc(parts[0]) + '&daddr=' + parts.slice(1).map(enc).join('+to:') + '&output=embed';
+    }
+    // Ordered, de-duplicated waypoint queries for a day (skips overnight rest stops).
+    function routeQList(d){
+        const out = []; let last = null;
+        d.stops.forEach(s=>{ if(s.cat === 'rest') return; const q = s.gmapsQ; if(q && q !== last){ out.push(q); last = q; } });
+        return out.length ? out : d.dirParts;
+    }
+    // Full round-trip skeleton for the overview embed.
+    const FULL_ROUTE = ['Colorado Springs, CO','Moab, UT','St. George, UT','Las Vegas, NV','La Jolla, San Diego, CA','Tucson, AZ','Las Cruces, NM','Santa Fe, NM','Colorado Springs, CO'];
 
     const TRIP = {
         days: [
@@ -722,7 +876,8 @@
                     { t:'08:00 AM', title:'Love Muffin Cafe', cat:'coffee', lat:38.5703, lng:-109.5497, leg:'Before noon',
                       desc:'A top-tier local staple. Grab a flawlessly extracted double shot and scratch-baked organic muffins before leaving town.',
                       detail:'Order the breakfast burrito for the road. Last great coffee until St. George, so caffeinate properly.',
-                      gmapsQ:'Love Muffin Cafe Moab' },
+                      gmapsQ:'Love Muffin Cafe Moab',
+                      vibe:'Bright, art-strewn corner cafe \u2014 morning sun floods the front windows for a warm, relaxed cup-in-hand frame before the red rock.' },
                     { t:'08:30 AM', title:'Wheels Up', cat:'depart', lat:38.5733, lng:-109.5498, leg:'+0 mi',
                       desc:'Join I-70 West to cross the massive geological folds of the San Rafael Swell.',
                       detail:'US-191 N to I-70 W. The Swell is one of the longest no-services stretches on the interstate system — start with a full tank.',
@@ -777,7 +932,8 @@
                     { t:'09:00 AM', title:'Bonrue Bakery', cat:'coffee', lat:37.1226, lng:-113.5380, leg:'Before noon',
                       desc:'An elite artisan European pastry program. Grab world-class laminated croissants and excellent espresso before hitting the state line.',
                       detail:'A slow, civilized morning — there\u2019s no rush on the day\u2019s short 2-hour drive. Grab extra pastries for the Valley of Fire stop.',
-                      gmapsQ:'Bonrue Bakery St. George UT' },
+                      gmapsQ:'Bonrue Bakery St. George UT',
+                      vibe:'Clean, light-filled minimalist bakery \u2014 laminated pastry + flat-white steam make a soft, slow-morning composition.' },
                     { t:'10:00 AM', title:'Virgin River Gorge', cat:'photo', lat:36.9594, lng:-113.7700, leg:'+38 mi',
                       desc:'Enter the tight limestone canyon walls on I-15 South. Wide highway turnouts let you appreciate the massive engineering rock features.',
                       detail:'One of the most expensive miles of interstate ever built — the road threads the Virgin River through sheer limestone. Turnouts are limited; pick one and commit.',
@@ -828,7 +984,8 @@
                     { t:'07:30 AM', title:'Mothership Coffee Roasters', cat:'coffee', lat:36.0517, lng:-115.1190, leg:'Before noon',
                       desc:'Beautiful, design-centric open courtyard. Pick up a precise manual pour-over before tackling the Mojave.',
                       detail:'Henderson roaster with a gorgeous patio. Fill the travel mug — the next great cup is on the coast.',
-                      gmapsQ:'Mothership Coffee Roasters Las Vegas' },
+                      gmapsQ:'Mothership Coffee Roasters Las Vegas',
+                      vibe:'Design-forward Henderson roaster built around an open, plant-filled courtyard \u2014 the 7:30 patio light is gorgeous for a cup-in-hand shot.' },
                     { t:'08:00 AM', title:'Wheels Up', cat:'depart', lat:36.1147, lng:-115.1728, leg:'+0 mi',
                       desc:'Clear the Strip early to cross the remote desert valleys.',
                       detail:'I-15 S across the Mojave. The Baker / Zzyzx stretch is the hottest and most exposed — keep the tank above half.',
@@ -867,6 +1024,174 @@
                       desc:'The iconic pink landmark right above La Jolla Cove — a backup with the most central ocean-village location.',
                       meta:[['Style','Historic landmark'],['Parking','Valet'],['Distance to base','La Jolla Cove']],
                       gmapsQ:'La Valencia Hotel La Jolla' }
+                ]
+            },
+            {
+                id: 'day5', n: 5, seg: 'ret', title: 'Sonoran Turn', from: 'La Jolla', to: 'Tucson',
+                accent: '#d97706', soft: 'rgba(217,119,6,0.10)',
+                distance: 410, driveMin: 365, elevFrom: 50, elevTo: 2640,
+                elevation: [50, -40, 140, 737, 1400, 2640],
+                elevLabels: ['La Jolla \u2248 sea level', 'Tucson 2,640 ft'],
+                weather: { href: 'https://forecast7.com/en/32d22n110d97/tucson/', l1: 'TUCSON, AZ', l2: 'FORECAST' },
+                safety: 'The southern return turns for home. I-8 drops below sea level through the Imperial Valley and crosses the low Sonoran Desert \u2014 the hottest stretch of the whole loop. Start early, carry water, and keep the tank above half across the Yuma\u2013Gila Bend gap.',
+                dirParts: ['La Jolla, San Diego, CA', 'El Centro, CA', 'Yuma, AZ', 'Tucson, AZ'],
+                waypoints: [[32.85,-117.27],[32.79,-115.56],[32.69,-114.62],[32.95,-112.72],[32.88,-111.76],[32.22,-110.97]],
+                stops: [
+                    { t:'07:30 AM', title:'Bird Rock Coffee Roasters', cat:'coffee', lat:32.8133, lng:-117.2725, leg:'Before noon',
+                      desc:'One last world-class San Diego pour-over before pointing the rig east for home.',
+                      detail:'Multi-roaster award winner in La Jolla. Fill the travel mug \u2014 the next great cup is a long desert away.',
+                      gmapsQ:'Bird Rock Coffee Roasters La Jolla',
+                      vibe:'Coastal-modern flagship full of blond wood and daylight \u2014 pull up to the bar for a clean, bright pour-over portrait.' },
+                    { t:'08:00 AM', title:'Wheels Up \u2014 Eastbound', cat:'depart', lat:32.8500, lng:-117.2700, leg:'+0 mi',
+                      desc:'Climb out of the marine layer over the Lagunas and drop onto I-8 toward the Imperial Valley.',
+                      detail:'I-8 E is the southern artery home. The descent past Mountain Spring into the desert floor is dramatic \u2014 watch brakes on the long 6% grade.',
+                      gmapsQ:'I-8 East San Diego' },
+                    { t:'10:30 AM', title:'Imperial Sand Dunes', cat:'photo', lat:32.9500, lng:-115.1000, leg:'+115 mi',
+                      desc:'The largest dune field in California rolls right up to I-8 near Glamis \u2014 a Sahara-like wall of sand and a quick, surreal photo pull-off.',
+                      detail:'Used as Tatooine and countless film deserts. Stay on hard ground; the dunes get blisteringly hot by late morning.',
+                      gmapsQ:'Imperial Sand Dunes Glamis' },
+                    { t:'12:00 PM', title:'Yuma \u00B7 Date Shakes', cat:'food', lat:32.6927, lng:-114.6277, leg:'+58 mi',
+                      desc:'Cross into Arizona at Yuma \u2014 historic river-crossing town and date-farm country. A medjool date shake is the classic desert refuel.',
+                      detail:'Yuma is one of the sunniest places on Earth. Grab the date shake at a local farm stand and tour the Territorial Prison if time allows.',
+                      gmapsQ:'Martha\u2019s Gardens Date Farm Yuma' },
+                    { t:'02:45 PM', title:'Arrive: Tucson Base', cat:'arrive', lat:32.2217, lng:-110.9265, leg:'+242 mi',
+                      desc:'Roll into Tucson mid-afternoon, ringed by five mountain ranges and the tallest saguaros on the route.',
+                      detail:'Arizona stays on MST year-round, so you gain back the clock feel. Check in, then chase saguaro golden hour.',
+                      gmapsQ:'Tucson, AZ' },
+                    { t:'03:45 PM', title:'Mission San Xavier del Bac', cat:'activity', lat:32.1074, lng:-111.0080, leg:'Detour',
+                      desc:'The \u201CWhite Dove of the Desert\u201D \u2014 a dazzling 1797 Spanish mission glowing against the Sonoran sky south of town.',
+                      detail:'The finest Spanish colonial architecture in the U.S., still an active parish. Free to enter; soft late light makes the white facade luminous.',
+                      gmapsQ:'Mission San Xavier del Bac' },
+                    { t:'05:30 PM', title:'Saguaro NP West \u00B7 Sunset', cat:'photo', lat:32.2549, lng:-111.1976, leg:'Golden hour',
+                      desc:'Drive the Bajada Loop among thousand-armed giant saguaros backlit by a classic desert sunset.',
+                      detail:'The west unit (Tucson Mountain District) has the densest cactus forest. Gates Pass nearby is the local sunset favorite.',
+                      gmapsQ:'Saguaro National Park West Bajada Loop' },
+                    { t:'07:15 PM', title:'El Charro Caf\u00E9', cat:'food', lat:32.2245, lng:-110.9740, leg:'Dinner',
+                      desc:'The oldest continuously family-run Mexican restaurant in the U.S. \u2014 birthplace of the chimichanga.',
+                      detail:'Order the carne seca, sun-dried on the rooftop. A fitting first night back inland.',
+                      gmapsQ:'El Charro Cafe Tucson' },
+                    { t:'08:45 PM', title:'Wind Down', cat:'rest', lat:32.2217, lng:-110.9265, leg:'Rest',
+                      desc:'Back at base \u2014 evening magnesium, charge cameras, and prep for the White Sands day.',
+                      detail:'Tomorrow crosses into New Mexico (clocks jump +1 hr) and ends at the white gypsum dunes. Set the alarm accordingly.', voice:true,
+                      gmapsQ:'Tucson, AZ' }
+                ],
+                lodging: [
+                    { name:'Arizona Inn', status:'consider', img:'https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?auto=format&fit=crop&w=900&q=80',
+                      desc:'A historic 1930s pink-adobe hideaway with private gardens and quiet, gated parking minutes from downtown.',
+                      meta:[['Style','Historic garden inn'],['Parking','Gated grounds'],['Distance to base','Midtown']],
+                      gmapsQ:'Arizona Inn Tucson' },
+                    { name:'Loews Ventana Canyon Resort', status:'alternate',
+                      desc:'A desert resort tucked against the Catalina foothills with wide-open self-parking and saguaro views.',
+                      meta:[['Style','Foothills resort'],['Parking','Open self-park'],['Distance to base','NE foothills']],
+                      gmapsQ:'Loews Ventana Canyon Resort Tucson' }
+                ]
+            },
+            {
+                id: 'day6', n: 6, seg: 'ret', title: 'Gypsum Sea', from: 'Tucson', to: 'Las Cruces',
+                accent: '#0891b2', soft: 'rgba(8,145,178,0.10)',
+                distance: 340, driveMin: 320, elevFrom: 2640, elevTo: 3900,
+                elevation: [2640, 4600, 4335, 3900, 4235, 3900],
+                elevLabels: ['Tucson 2,640 ft', 'White Sands 4,235 ft'],
+                weather: { href: 'https://forecast7.com/en/32d31n106d78/las-cruces/', l1: 'LAS CRUCES, NM', l2: 'FORECAST' },
+                safety: 'A relaxed I-10 run east, then the crown jewel: sunset on the white gypsum dunes. White Sands closes at dusk and has no services \u2014 fuel and water up in Las Cruces first, and never enter the dunes without checking the missile-range road-closure schedule.',
+                dirParts: ['Tucson, AZ', 'Lordsburg, NM', 'Las Cruces, NM', 'White Sands National Park, NM'],
+                waypoints: [[32.2217,-110.9265],[32.0600,-110.0500],[32.2700,-107.7600],[32.3120,-106.7780],[32.7800,-106.3300],[32.3120,-106.7780]],
+                stops: [
+                    { t:'07:30 AM', title:'Exo Roast Co.', cat:'coffee', lat:32.2235, lng:-110.9650, leg:'Before noon', tz:-7,
+                      desc:'A Tucson roaster known for desert-grown chiltepin cold brew \u2014 a proper send-off cup.',
+                      detail:'Light, bright single origins. Last Arizona coffee before the New Mexico line and the clock change.',
+                      gmapsQ:'Exo Roast Co Tucson',
+                      vibe:'Cool, minimal desert-modern roaster \u2014 soft side light makes the chiltepin cold brew glow for a slow, low-key frame.' },
+                    { t:'08:00 AM', title:'Wheels Up', cat:'depart', lat:32.2217, lng:-110.9265, leg:'+0 mi', tz:-7,
+                      desc:'Join I-10 East across the high Sonoran grasslands toward the New Mexico bootheel.',
+                      detail:'Long, open interstate. Cochise County dust storms (haboobs) can hit fast in summer \u2014 if visibility drops, pull fully off and stop.',
+                      gmapsQ:'I-10 East Tucson' },
+                    { t:'10:30 AM', title:'Texas Canyon', cat:'photo', lat:32.0600, lng:-110.0500, leg:'+75 mi', tz:-7,
+                      desc:'A bizarre field of giant balanced granite boulders straddling I-10 \u2014 a great leg-stretch at the Triangle T pull-off.',
+                      detail:'The rounded \u201Cwoolsack\u201D boulders weather out of an ancient granite pluton. The rest area here has interpretive plaques.',
+                      gmapsQ:'Texas Canyon Rest Area Arizona' },
+                    { t:'01:00 PM', title:'Old Mesilla Plaza', cat:'food', lat:32.2710, lng:-106.8000, leg:'+205 mi · +1 hr TZ',
+                      desc:'Cross into New Mexico (clocks jump +1 hr) and lunch on the historic Mesilla plaza \u2014 green-chile everything in adobe courtyards.',
+                      detail:'Once the largest town between San Antonio and San Diego. La Posta and Double Eagle anchor the 1850s plaza. This is your White Sands staging point.',
+                      gmapsQ:'Old Mesilla Plaza Las Cruces' },
+                    { t:'03:30 PM', title:'White Sands National Park', cat:'activity', lat:32.7800, lng:-106.3300, leg:'+55 mi · Highlight',
+                      desc:'275 sq mi of blinding white gypsum dunes \u2014 sled the slopes, walk the Alkali Flat, and stay for an unreal pastel sunset.',
+                      detail:'The largest gypsum dune field on Earth. Buy a plastic sled at the visitor center, and time the Dunes Drive for the sunset hour. Check the missile-range closure schedule before you go.',
+                      gmapsQ:'White Sands National Park' },
+                    { t:'07:15 PM', title:'Arrive: Las Cruces Base', cat:'arrive', lat:32.3120, lng:-106.7780, leg:'+55 mi back',
+                      desc:'Backtrack to Las Cruces under the Organ Mountains for the night.',
+                      detail:'The jagged Organ Mountains catch alpenglow at dusk \u2014 a fine view from the west-facing side of town.',
+                      gmapsQ:'Las Cruces, NM' },
+                    { t:'08:00 PM', title:'La Posta de Mesilla', cat:'food', lat:32.2706, lng:-106.7997, leg:'Dinner',
+                      desc:'A rambling 1939 cantina in a former Butterfield stagecoach stop \u2014 enchiladas, sopaipillas and a tequila wall.',
+                      detail:'Touristy but beloved and historic. Get the red-or-green (\u201CChristmas\u201D) and the honey-drizzled sopaipillas.',
+                      gmapsQ:'La Posta de Mesilla' },
+                    { t:'09:15 PM', title:'Wind Down', cat:'rest', lat:32.3120, lng:-106.7780, leg:'Rest',
+                      desc:'Last night on the road. Repack, charge up, and rest for the long climb home over Raton Pass.',
+                      detail:'Tomorrow is the big I-25 push north through Albuquerque and Santa Fe, topping out at 7,834 ft on Raton Pass before the descent to Colorado Springs.', voice:true,
+                      gmapsQ:'Las Cruces, NM' }
+                ],
+                lodging: [
+                    { name:'Hotel Encanto de Las Cruces', status:'consider', img:'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=900&q=80',
+                      desc:'A Spanish-colonial-style hotel with a grand portico, easy surface parking and Organ Mountain views.',
+                      meta:[['Style','Spanish colonial'],['Parking','Surface lot'],['Distance to base','Central']],
+                      gmapsQ:'Hotel Encanto de Las Cruces' },
+                    { name:'Hampton Inn Alamogordo', status:'alternate',
+                      desc:'A practical option closer to White Sands if you\u2019d rather sleep beside the dunes than backtrack.',
+                      meta:[['Style','Modern inn'],['Parking','Free lot'],['Distance to base','By White Sands']],
+                      gmapsQ:'Hampton Inn Alamogordo NM' }
+                ]
+            },
+            {
+                id: 'day7', n: 7, seg: 'ret', title: 'Raton Homecoming', from: 'Las Cruces', to: 'Colorado Springs',
+                accent: '#16a34a', soft: 'rgba(22,163,74,0.10)',
+                distance: 470, driveMin: 430, elevFrom: 3900, elevTo: 6035,
+                elevation: [3900, 4500, 5300, 7200, 7834, 6035],
+                elevLabels: ['Las Cruces 3,900 ft', 'Colorado Springs 6,035 ft'],
+                weather: { href: 'https://forecast7.com/en/38d83n104d82/colorado-springs/', l1: 'COLO. SPRINGS, CO', l2: 'FORECAST' },
+                safety: 'The longest return leg climbs the length of New Mexico on I-25 and tops out at 7,834 ft on Raton Pass. Afternoon mountain thunderstorms build fast over Santa Fe and Raton \u2014 get the big miles done early and watch for sudden downpours on the pass descent.',
+                dirParts: ['Las Cruces, NM', 'Albuquerque, NM', 'Santa Fe, NM', 'Raton, NM', 'Colorado Springs, CO'],
+                waypoints: [[32.3120,-106.7780],[33.1300,-107.2500],[34.0600,-106.8900],[35.0840,-106.6500],[35.6900,-105.9400],[36.9000,-104.4400],[37.1700,-104.5000],[38.2540,-104.6090],[38.8339,-104.8214]],
+                stops: [
+                    { t:'07:00 AM', title:'Milagro Coffee y Espresso', cat:'coffee', lat:32.2810, lng:-106.7420, leg:'Before noon',
+                      desc:'A bustling local roaster by NMSU \u2014 strong espresso to fuel the longest day of the loop.',
+                      detail:'Get a second cup for the road; it\u2019s a 4-hour run just to Albuquerque. Fill the tank before leaving the Mesilla Valley.',
+                      gmapsQ:'Milagro Coffee y Espresso Las Cruces',
+                      vibe:'Easygoing adobe-style college roaster \u2014 catch the early Mesilla Valley light on the patio before the long haul north.' },
+                    { t:'07:30 AM', title:'Wheels Up \u2014 I-25 North', cat:'depart', lat:32.3120, lng:-106.7780, leg:'+0 mi',
+                      desc:'Head up the Rio Grande corridor past Truth or Consequences and Socorro toward Albuquerque.',
+                      detail:'I-25 N traces the river the whole way. Long open stretches \u2014 a good morning for the leg soundtrack.',
+                      gmapsQ:'I-25 North Las Cruces' },
+                    { t:'10:45 AM', title:'Albuquerque Old Town', cat:'activity', lat:35.0966, lng:-106.6700, leg:'+225 mi',
+                      desc:'Stretch your legs around the 1706 adobe plaza \u2014 San Felipe de Neri church, turquoise stalls and a quick green-chile snack.',
+                      detail:'If you want a big view, the Sandia Peak Tramway climbs to 10,378 ft. Otherwise a 45-minute Old Town loop is the perfect mid-morning break.',
+                      gmapsQ:'Old Town Albuquerque' },
+                    { t:'12:45 PM', title:'Santa Fe Plaza', cat:'food', lat:35.6870, lng:-105.9378, leg:'+65 mi · Lunch',
+                      desc:'Lunch on the oldest plaza in the U.S. \u2014 adobe galleries, the Palace of the Governors, and serious New Mexican food.',
+                      detail:'Detour to Meow Wolf\u2019s House of Eternal Return if you have an extra 90 minutes. Otherwise the Plaza and Canyon Road galleries are the classic stop.',
+                      gmapsQ:'Santa Fe Plaza' },
+                    { t:'03:30 PM', title:'Raton Pass', cat:'photo', lat:36.9900, lng:-104.4700, leg:'+165 mi · 7,834 ft',
+                      desc:'Climb the old Santa Fe Trail gap and cross back into Colorado at 7,834 ft \u2014 a genuine \u201Calmost home\u201D moment.',
+                      detail:'There\u2019s a scenic overlook on the Colorado side. From here it\u2019s a steady descent through Trinidad and Pueblo to the Springs.',
+                      gmapsQ:'Raton Pass Summit Colorado' },
+                    { t:'05:45 PM', title:'Arrive: Colorado Springs', cat:'arrive', lat:38.8339, lng:-104.8214, leg:'+165 mi',
+                      desc:'Roll home beneath Pikes Peak \u2014 the loop closed, alpine to sea to alpine.',
+                      detail:'Garden of the Gods glows at sunset if you want one last frame before unpacking. 2,300+ round-trip miles, fully logged.',
+                      gmapsQ:'Colorado Springs, CO' },
+                    { t:'07:00 PM', title:'Homecoming Dinner', cat:'food', lat:38.8339, lng:-104.8214, leg:'Celebration',
+                      desc:'A celebratory dinner back in the Springs \u2014 you earned it.',
+                      detail:'Downtown Colorado Springs and Old Colorado City have the local favorites. Toast the full southern loop.',
+                      gmapsQ:'restaurants downtown Colorado Springs' },
+                    { t:'08:30 PM', title:'Journey Complete', cat:'rest', lat:38.8339, lng:-104.8214, leg:'Loop closed',
+                      desc:'Home. Unpack the brew kit, back up the photos, and rest.',
+                      detail:'Colorado Springs \u2192 La Jolla \u2192 home over two states\u2019 worth of fresh desert. A proper Great Loop of the Southwest.', voice:true,
+                      gmapsQ:'Colorado Springs, CO' }
+                ],
+                lodging: [
+                    { name:'Home \u00B7 Colorado Springs', status:'decided', img:'https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=900&q=80',
+                      desc:'Journey\u2019s end \u2014 your own bed beneath Pikes Peak. No booking required.',
+                      meta:[['Style','Home'],['Parking','Driveway'],['Distance to base','\u2014']],
+                      gmapsQ:'Colorado Springs, CO' }
                 ]
             }
         ],
@@ -928,9 +1253,9 @@
                 5: 'Moab was a 1950s uranium boomtown; the surrounding mesas are still laced with old mining roads now famous as mountain-bike trails.'
             },
             sideQuests: [
-                { ic:'\uD83C\uDF05', name:'Dead Horse Point at sunset', add:'+45 min', desc:'Arguably a finer sunset than the park itself \u2014 2,000 ft above a gooseneck bend in the Colorado River.', q:'Dead Horse Point State Park' },
-                { ic:'\uD83D\uDDFF', name:'Fisher Towers', add:'+30 min', desc:'Otherworldly red spires off UT-128; a short out-and-back or just the viewpoint pull-off.', q:'Fisher Towers Trailhead Moab' },
-                { ic:'\uD83E\uDD85', name:'Corona Arch hike', add:'+1.5 hr', desc:'A massive freestanding arch on a 3-mile round trip, with far fewer crowds than the park.', q:'Corona Arch Trailhead Moab' }
+                { ic:'\uD83C\uDF05', name:'Dead Horse Point at sunset', add:'+45 min', fy:true, walk:'0.5 mi rim walk', light:'Golden hour \u00B7 west-facing overlook', desc:'Arguably a finer sunset than the park itself \u2014 2,000 ft above a gooseneck bend in the Colorado River.', q:'Dead Horse Point State Park' },
+                { ic:'\uD83D\uDDFF', name:'Fisher Towers', add:'+30 min', fy:true, walk:'Roadside pull-off or 2.2 mi out-and-back', light:'Late afternoon \u00B7 spires turn molten red', desc:'Otherworldly red spires off UT-128; a short out-and-back or just the viewpoint pull-off.', q:'Fisher Towers Trailhead Moab' },
+                { ic:'\uD83E\uDD85', name:'Corona Arch hike', add:'+1.5 hr', fy:true, walk:'3 mi round trip \u00B7 easy', light:'Best mid-morning side light', desc:'A massive freestanding arch on a 3-mile round trip, with far fewer crowds than the park.', q:'Corona Arch Trailhead Moab' }
             ]
         },
         day2: {
@@ -942,8 +1267,8 @@
                 4: 'Snow Canyon\u2019s black lava flows are only ~27,000 years old \u2014 toddlers in geologic terms \u2014 draped over 180-million-year-old red dunes.'
             },
             sideQuests: [
-                { ic:'\uD83C\uDF44', name:'Goblin Valley State Park', add:'+1 hr', desc:'A surreal field of mushroom-shaped hoodoos you can walk among. Pure Mars.', q:'Goblin Valley State Park' },
-                { ic:'\uD83C\uDF52', name:'Capitol Reef & Fruita', add:'+1.5 hr', desc:'Historic orchards, petroglyphs and the Waterpocket Fold along Scenic Byway 24.', q:'Capitol Reef National Park Fruita' },
+                { ic:'\uD83C\uDF44', name:'Goblin Valley State Park', add:'+1 hr', fy:true, walk:'Free-roam the hoodoo basin', light:'Low raking sun rakes shadows across the goblins', desc:'A surreal field of mushroom-shaped hoodoos you can walk among. Pure Mars.', q:'Goblin Valley State Park' },
+                { ic:'\uD83C\uDF52', name:'Capitol Reef & Fruita', add:'+1.5 hr', fy:true, walk:'Easy orchard & petroglyph strolls', light:'Soft, warm light off the Waterpocket Fold', desc:'Historic orchards, petroglyphs and the Waterpocket Fold along Scenic Byway 24.', q:'Capitol Reef National Park Fruita' },
                 { ic:'\uD83E\uDD5E', name:"Mom's Cafe, Salina", add:'+20 min', desc:'Old-school Utah diner \u2014 get the scones with honey butter while the tank fills.', q:"Mom's Cafe Salina UT" }
             ]
         },
@@ -955,8 +1280,8 @@
                 3: 'Mouse\u2019s Tank Road is named for a Southern Paiute outlaw, \u201CMouse,\u201D who hid in the canyon\u2019s natural rock water pockets in the 1890s.'
             },
             sideQuests: [
-                { ic:'\uD83D\uDD25', name:'Valley of Fire \u2014 Fire Wave', add:'+1 hr', desc:'Beyond Mouse\u2019s Tank: a short walk to the striped, wave-like sandstone formation.', q:'Fire Wave Trail Valley of Fire' },
-                { ic:'\uD83D\uDfE5', name:'Seven Magic Mountains', add:'+40 min', desc:'Ugo Rondinone\u2019s 30-ft neon stone totems rising from the desert south of Vegas.', q:'Seven Magic Mountains Las Vegas' },
+                { ic:'\uD83D\uDD25', name:'Valley of Fire \u2014 Fire Wave', add:'+1 hr', fy:true, walk:'1.5 mi round trip \u00B7 easy', light:'Soft light / light overcast saturates the stripes \u2014 avoid harsh midday glare', desc:'Beyond Mouse\u2019s Tank: a short walk to the striped, wave-like sandstone formation.', q:'Fire Wave Trail Valley of Fire' },
+                { ic:'\uD83D\uDfE5', name:'Seven Magic Mountains', add:'+40 min', fy:true, walk:'Short stroll among the totems', light:'Sunrise or sunset pops the neon against the desert', desc:'Ugo Rondinone\u2019s 30-ft neon stone totems rising from the desert south of Vegas.', q:'Seven Magic Mountains Las Vegas' },
                 { ic:'\uD83C\uDF09', name:'Hoover Dam & bridge walk', add:'+1.5 hr', desc:'An engineering icon and a dizzying walkway over Black Canyon on the O\u2019Callaghan Bridge.', q:'Hoover Dam Bypass Bridge Memorial Plaza' }
             ]
         },
@@ -969,9 +1294,52 @@
                 5: 'The Torrey pine is the rarest pine in North America, growing wild in only two places on Earth \u2014 these bluffs and Santa Rosa Island.'
             },
             sideQuests: [
-                { ic:'\uD83D\uDC7B', name:'Calico Ghost Town', add:'+40 min', desc:'A restored 1880s silver-mining town in the hills above Barstow.', q:'Calico Ghost Town' },
-                { ic:'\uD83C\uDF7E', name:"Elmer's Bottle Tree Ranch", add:'+25 min', desc:'A glittering forest of bottle \u201Ctrees\u201D on Route 66 near Oro Grande.', q:"Elmer's Bottle Tree Ranch" },
-                { ic:'\uD83C\uDF38', name:'Carlsbad Flower Fields', add:'+20 min', desc:'Fifty acres of ranunculus blooms above the Pacific (spring season only).', q:'The Flower Fields Carlsbad' }
+                { ic:'\uD83C\uDF7E', name:"Elmer's Bottle Tree Ranch", add:'+25 min', fy:true, walk:'Wander the glass forest', light:'Backlit at golden hour the bottles glitter \u2014 a photographer\u2019s playground', desc:'A glittering forest of bottle \u201Ctrees\u201D on Route 66 near Oro Grande.', q:"Elmer's Bottle Tree Ranch" },
+                { ic:'\uD83C\uDF38', name:'Carlsbad Flower Fields', add:'+20 min', fy:true, walk:'Easy paths through 50 acres of blooms', light:'Soft morning light \u00B7 spring season only', desc:'Fifty acres of ranunculus blooms above the Pacific (spring season only).', q:'The Flower Fields Carlsbad' },
+                { ic:'\uD83D\uDC7B', name:'Calico Ghost Town', add:'+40 min', desc:'A restored 1880s silver-mining town in the hills above Barstow.', q:'Calico Ghost Town' }
+            ]
+        },
+        day5: {
+            tz: -7,
+            darkSky: { name: 'Sonoran Skies', note: 'Tucson pioneered the world\u2019s first dark-sky lighting laws to protect its observatories \u2014 the saguaro forests west of town hold deep, star-dense desert nights.' },
+            soundtrack: { vibe: 'Sun-cracked desert noir for the long run across the Sonoran low country.', tracks: [['Calexico','Sunken Waltz'],['Giant Sand','Tucson'],['Lord Huron','Ends of the Earth'],['Chris Isaak','Wicked Game']] },
+            lore: {
+                2: 'The Imperial Sand Dunes have stood in for the Sahara and the deserts of Tatooine \u2014 a 40-mile sand sea most travelers blow right past on I-8.',
+                4: 'Tucson sits in a basin ringed by five separate mountain ranges and is the only U.S. city with a UNESCO \u201CCity of Gastronomy\u201D title.',
+                5: 'Mission San Xavier del Bac has stood since 1797 and is still an active parish \u2014 the finest Spanish colonial church in the United States.'
+            },
+            sideQuests: [
+                { ic:'\uD83C\uDFDC\uFE0F', name:'Gates Pass sunset', add:'+30 min', fy:true, walk:'Short scramble to the viewpoints', light:'Tucson\u2019s premier sunset overlook \u2014 saguaros in silhouette', desc:'Tucson\u2019s favorite sunset overlook in the Tucson Mountains, on the way to Saguaro West.', q:'Gates Pass Scenic Overlook Tucson' },
+                { ic:'\uD83C\uDF35', name:'Saguaro NP East (Rincon)', add:'+1 hr', fy:true, walk:'Cactus Forest Loop + short trails', light:'Golden hour backlights the old-growth saguaros', desc:'The quieter east unit has the densest old-growth saguaros and the Cactus Forest Loop drive.', q:'Saguaro National Park East Cactus Forest Loop' },
+                { ic:'\uD83D\uDD2D', name:'Kitt Peak National Observatory', add:'+2 hr', desc:'The largest collection of optical telescopes on Earth, an hour southwest \u2014 book a night program ahead.', q:'Kitt Peak National Observatory' }
+            ]
+        },
+        day6: {
+            tz: -6, tzByStop: { 0: -7, 1: -7, 2: -7 },
+            darkSky: { name: 'White Sands', note: 'Far from any city glow, the white gypsum reflects starlight so brightly you can walk the dunes by the Milky Way alone \u2014 one of the darkest skies in the Southwest.' },
+            soundtrack: { vibe: 'Spacious, shimmering desert ambient for a sea of white sand.', tracks: [['Explosions in the Sky','Your Hand in Mine'],['Hammock','Mute'],['Sigur R\u00F3s','Hopp\u00EDpolla'],['Beach House','Space Song']] },
+            lore: {
+                3: 'Mesilla was the Confederate capital of the Arizona Territory and a stop on the Butterfield Overland stagecoach \u2014 the plaza looks much as it did in the 1850s.',
+                4: 'White Sands is the largest gypsum dune field on Earth; the gypsum rarely forms dunes because it dissolves in water \u2014 it survives here only because the basin has no outlet to the sea.'
+            },
+            sideQuests: [
+                { ic:'\u26F0\uFE0F', name:'Organ Mountains \u2013 Dripping Springs', add:'+1.5 hr', fy:true, walk:'3 mi round trip \u00B7 gentle grade', light:'Morning light fires the jagged Organ spires', desc:'A canyon trail to a historic resort ruin beneath the Organ Mountains\u2019 jagged spires.', q:'Dripping Springs Natural Area Las Cruces' },
+                { ic:'\uD83C\uDF36\uFE0F', name:'Hatch chile stop', add:'+20 min', desc:'The self-proclaimed Chile Capital of the World, just off I-25 north of Las Cruces.', q:'Hatch New Mexico chile' },
+                { ic:'\uD83D\uDE80', name:'Spaceport America tour', add:'+3 hr', desc:'Virgin Galactic\u2019s futuristic desert spaceport runs tours from Truth or Consequences.', q:'Spaceport America Tours New Mexico' }
+            ]
+        },
+        day7: {
+            tz: -6,
+            soundtrack: { vibe: 'High-desert Americana building to a Rocky Mountain homecoming.', tracks: [['Nathaniel Rateliff','And It\u2019s Still Alright'],['Neil Young','Albuquerque'],['Jason Isbell','Cover Me Up'],['John Denver','Back Home Again']] },
+            lore: {
+                2: 'Albuquerque\u2019s Old Town has anchored the city since 1706; the surrounding mesas hold 20,000+ ancient petroglyphs at Petroglyph National Monument.',
+                3: 'Santa Fe, founded in 1610, is the oldest capital city in the U.S. and sits at 7,200 ft \u2014 the highest state capital in the country.',
+                4: 'Raton Pass was the toughest climb on the old Santa Fe Trail; wagons once paid a toll to \u201CUncle Dick\u201D Wootton to cross what I-25 now climbs at 7,834 ft.'
+            },
+            sideQuests: [
+                { ic:'\uD83C\uDF0B', name:'Capulin Volcano', add:'+1 hr', fy:true, walk:'1 mi paved rim loop', light:'Sweeping high light \u2014 four states on a clear day', desc:'Drive to the rim of an extinct cinder cone east of Raton \u2014 four states visible on a clear day.', q:'Capulin Volcano National Monument' },
+                { ic:'\uD83C\uDFDC\uFE0F', name:'Great Sand Dunes detour', add:'+3 hr', fy:true, walk:'Climb the dunes as far as you like', light:'Golden hour rakes long shadows down the dune faces', desc:'North America\u2019s tallest dunes via a western swing on US-160 \u2014 a big but spectacular add.', q:'Great Sand Dunes National Park' },
+                { ic:'\uD83C\uDFA8', name:'Meow Wolf \u00B7 Santa Fe', add:'+1.5 hr', desc:'The original immersive art funhouse \u2014 \u201CHouse of Eternal Return.\u201D Book timed tickets ahead.', q:'Meow Wolf House of Eternal Return Santa Fe' }
             ]
         }
     };
@@ -983,6 +1351,10 @@
             d.stops.forEach((s,i)=>{
                 s.tz = (ex.tzByStop && ex.tzByStop[i] != null) ? ex.tzByStop[i] : ex.tz;
                 if(ex.lore && ex.lore[i]) s.lore = ex.lore[i];
+                const ov = DWELL_OVERRIDE[s.title];
+                if(ov){ if(ov.dwell != null) s.dwell = ov.dwell; if(ov.detour != null) s.detour = ov.detour; }
+                if(STOP_ALERT[s.title]) s.alert = STOP_ALERT[s.title];
+                if(PARKING[s.title]) s.parking = PARKING[s.title];
             });
         });
     }
@@ -999,6 +1371,18 @@
     }
     function setTripStart(iso){ try { localStorage.setItem(SKEY, iso); } catch(e){} }
     function dayDate(n){ const d = getTripStart(); d.setDate(d.getDate() + (n-1)); return d; }
+
+    /* ---------- nights in San Diego + per-day dates (round trip) ---------- */
+    const NKEY = 'sd-sd-nights-v1';
+    function getNights(){ let n = null; try { n = localStorage.getItem(NKEY); } catch(e){} const v = parseInt(n, 10); return (isNaN(v) || v < 0) ? 1 : v; }
+    function setNights(v){ try { localStorage.setItem(NKEY, String(Math.max(0, parseInt(v,10)||0))); } catch(e){} }
+    function dayOffset(d){
+        if(d.seg !== 'ret') return d.n - 1;                       // outbound: day 1 = offset 0
+        const outCount = TRIP.days.filter(x=>x.seg !== 'ret').length;
+        const retIdx = TRIP.days.filter(x=>x.seg === 'ret').indexOf(d);
+        return (outCount - 1) + getNights() + retIdx;             // arrival day + SD nights + return index
+    }
+    function dateForDay(d){ const dt = getTripStart(); dt.setDate(dt.getDate() + dayOffset(d)); return dt; }
     function fmtDate(d){ return d.toLocaleDateString('en-US', { weekday:'short', month:'short', day:'numeric', year:'numeric' }); }
 
     // Classic almanac sunrise/sunset for an arbitrary solar-depression zenith.
@@ -1125,7 +1509,36 @@
         { id:'mormonrocks', day:'day4', cat:'scenic', name:'Mormon Rocks (Cajon)', lat:34.2760, lng:-117.4640, blurb:'Tilted sandstone fins straddling the San Andreas Fault at the Cajon summit.', q:'Mormon Rocks Cajon Pass' },
         { id:'wigwam', day:'day4', cat:'quirky', name:'Wigwam Motel', lat:34.1060, lng:-117.4030, blurb:'Sleep in a concrete teepee \u2014 a 1950 Route 66 landmark in San Bernardino.', q:'Wigwam Motel San Bernardino' },
         { id:'temecula', day:'day4', cat:'town', name:'Old Town Temecula', lat:33.4930, lng:-117.1490, blurb:'Wine country and a walkable historic Old Town just off I-15.', q:'Old Town Temecula' },
-        { id:'flowerfields', day:'day4', cat:'park', name:'Carlsbad Flower Fields', lat:33.1220, lng:-117.3170, blurb:'Fifty acres of ranunculus blooms above the Pacific (spring season only).', q:'The Flower Fields Carlsbad' }
+        { id:'flowerfields', day:'day4', cat:'park', name:'Carlsbad Flower Fields', lat:33.1220, lng:-117.3170, blurb:'Fifty acres of ranunculus blooms above the Pacific (spring season only).', q:'The Flower Fields Carlsbad' },
+
+        // ---- Day 5 corridor: La Jolla -> Tucson (I-8) ----
+        { id:'imperialdunes', day:'day5', cat:'scenic', name:'Imperial Sand Dunes', lat:32.9500, lng:-115.1000, blurb:'A 40-mile Sahara-like dune sea rolling right up to I-8 near Glamis.', q:'Imperial Sand Dunes Glamis' },
+        { id:'yumaprison', day:'day5', cat:'history', name:'Yuma Territorial Prison', lat:32.7280, lng:-114.6160, blurb:'The Old West\u2019s notorious \u201CHell Hole\u201D prison, now a state historic park above the Colorado River.', q:'Yuma Territorial Prison State Historic Park' },
+        { id:'sanxavier', day:'day5', cat:'history', name:'Mission San Xavier del Bac', lat:32.1074, lng:-111.0080, blurb:'The \u201CWhite Dove of the Desert\u201D \u2014 a dazzling 1797 Spanish colonial mission south of Tucson.', q:'Mission San Xavier del Bac' },
+        { id:'saguarowest', day:'day5', cat:'park', name:'Saguaro NP \u2014 West', lat:32.2549, lng:-111.1976, blurb:'The densest forest of giant saguaros on the Bajada Loop, best at golden hour.', q:'Saguaro National Park West Bajada Loop' },
+        { id:'gatespass', day:'day5', cat:'scenic', name:'Gates Pass', lat:32.2249, lng:-111.1130, blurb:'Tucson\u2019s favorite sunset overlook through the Tucson Mountains.', q:'Gates Pass Scenic Overlook Tucson' },
+        { id:'kittpeak', day:'day5', cat:'history', name:'Kitt Peak Observatory', lat:31.9583, lng:-111.5967, blurb:'The largest array of optical telescopes on Earth, with night observing programs.', q:'Kitt Peak National Observatory' },
+        { id:'mtlemmon', day:'day5', cat:'scenic', name:'Mt. Lemmon Scenic Byway', lat:32.4430, lng:-110.7880, blurb:'Drive from saguaros to pines in an hour \u2014 9,000 ft above the desert floor.', q:'Mount Lemmon Scenic Byway Tucson' },
+
+        // ---- Day 6 corridor: Tucson -> White Sands / Las Cruces ----
+        { id:'texascanyon', day:'day6', cat:'scenic', name:'Texas Canyon', lat:32.0600, lng:-110.0500, blurb:'A surreal field of giant balanced granite boulders straddling I-10.', q:'Texas Canyon Rest Area Arizona' },
+        { id:'cityofrocks', day:'day6', cat:'park', name:'City of Rocks State Park', lat:32.5870, lng:-107.9750, blurb:'A maze of sculpted volcanic monoliths rising from the plain near Deming.', q:'City of Rocks State Park New Mexico' },
+        { id:'mesilla', day:'day6', cat:'town', name:'Old Mesilla Plaza', lat:32.2710, lng:-106.8000, blurb:'An 1850s adobe plaza and Butterfield stage stop \u2014 green-chile everything.', q:'Old Mesilla Plaza Las Cruces' },
+        { id:'whitesands', day:'day6', cat:'park', name:'White Sands National Park', lat:32.7800, lng:-106.3300, blurb:'275 sq mi of blinding white gypsum dunes \u2014 sled them, then watch a pastel sunset.', q:'White Sands National Park' },
+        { id:'drippingsprings', day:'day6', cat:'hike', name:'Dripping Springs (Organ Mtns)', lat:32.3370, lng:-106.5650, blurb:'A canyon trail to a historic resort ruin beneath jagged 9,000-ft spires.', q:'Dripping Springs Natural Area Las Cruces' },
+        { id:'hatch', day:'day6', cat:'food', name:'Hatch, NM \u2014 Chile Capital', lat:32.6660, lng:-107.1530, blurb:'The self-proclaimed Chile Capital of the World, just off I-25.', q:'Hatch New Mexico chile' },
+        { id:'spaceport', day:'day6', cat:'quirky', name:'Spaceport America', lat:32.9903, lng:-106.9750, blurb:'Virgin Galactic\u2019s futuristic desert spaceport offers guided tours from T-or-C.', q:'Spaceport America Tours New Mexico' },
+
+        // ---- Day 7 corridor: Las Cruces -> Colorado Springs (I-25) ----
+        { id:'abqoldtown', day:'day7', cat:'town', name:'Albuquerque Old Town', lat:35.0966, lng:-106.6700, blurb:'A 1706 adobe plaza of galleries, turquoise stalls and the San Felipe de Neri church.', q:'Old Town Albuquerque' },
+        { id:'sandia', day:'day7', cat:'scenic', name:'Sandia Peak Tramway', lat:35.1930, lng:-106.4290, blurb:'The world\u2019s longest aerial tram climbs to 10,378 ft over Albuquerque.', q:'Sandia Peak Tramway' },
+        { id:'petroglyph', day:'day7', cat:'history', name:'Petroglyph National Monument', lat:35.1390, lng:-106.7470, blurb:'20,000+ ancient images carved into volcanic escarpments west of ABQ.', q:'Petroglyph National Monument' },
+        { id:'santafeplaza', day:'day7', cat:'town', name:'Santa Fe Plaza', lat:35.6870, lng:-105.9378, blurb:'The oldest capital plaza in the U.S. \u2014 adobe galleries and serious New Mexican food.', q:'Santa Fe Plaza' },
+        { id:'meowwolf', day:'day7', cat:'quirky', name:'Meow Wolf \u00B7 Santa Fe', lat:35.6730, lng:-105.9890, blurb:'The original immersive art funhouse, \u201CHouse of Eternal Return.\u201D Book ahead.', q:'Meow Wolf House of Eternal Return Santa Fe' },
+        { id:'bandelier', day:'day7', cat:'park', name:'Bandelier National Monument', lat:35.7780, lng:-106.2710, blurb:'Cliff dwellings and ladders into ancestral Pueblo cavates in a green canyon.', q:'Bandelier National Monument' },
+        { id:'ratonpass', day:'day7', cat:'scenic', name:'Raton Pass', lat:36.9900, lng:-104.4700, blurb:'The old Santa Fe Trail gap into Colorado at 7,834 ft \u2014 the \u201Calmost home\u201D overlook.', q:'Raton Pass Summit Colorado' },
+        { id:'capulin', day:'day7', cat:'park', name:'Capulin Volcano', lat:36.7830, lng:-103.9700, blurb:'Drive to the rim of an extinct cinder cone \u2014 four states visible on a clear day.', q:'Capulin Volcano National Monument' },
+        { id:'greatsanddunes', day:'day7', cat:'park', name:'Great Sand Dunes', lat:37.7920, lng:-105.5940, blurb:'North America\u2019s tallest dunes against the Sangre de Cristos \u2014 a big western detour.', q:'Great Sand Dunes National Park' }
     ];
     function poiById(id){ return CATALOG.find(p=>p.id===id) || (custom.own || []).find(o=>o.id===id) || null; }
 
@@ -1171,6 +1584,137 @@
 
     /* ---------- helpers ---------- */
     function fmtDur(min){ const h = Math.floor(min/60), m = min%60; return h + 'h' + (m?(' '+m+'m'):''); }
+
+    /* ---------- recommended stop durations + time added ---------- */
+    const STOP_DWELL = { depart:0, coffee:25, fuel:15, photo:20, activity:75, food:60, arrive:0, rest:0 };
+    const POI_DWELL  = { scenic:20, park:90, hike:90, water:45, history:45, quirky:20, food:60, town:60 };
+    // Per-stop tuning (minutes) keyed by stop title: dwell = time there, detour = extra driving off the line.
+    const DWELL_OVERRIDE = {
+        'UT-128 Colorado River Byway': { dwell:25 },
+        'Arches Sunset Loop': { dwell:90 },
+        "Mouse's Tank Road": { dwell:30, detour:30 },
+        'Torrey Pines Bluffs': { dwell:45 },
+        'Imperial Sand Dunes': { dwell:20 },
+        'Yuma \u00B7 Date Shakes': { dwell:35 },
+        'Mission San Xavier del Bac': { dwell:40, detour:15 },
+        'Saguaro NP West \u00B7 Sunset': { dwell:60, detour:20 },
+        'Texas Canyon': { dwell:20 },
+        'White Sands National Park': { dwell:150 },
+        'Old Mesilla Plaza': { dwell:60 },
+        'Albuquerque Old Town': { dwell:45, detour:10 },
+        'Santa Fe Plaza': { dwell:75, detour:10 },
+        'Raton Pass': { dwell:15 }
+    };
+    function stopDwell(s){ return s.dwell != null ? s.dwell : (STOP_DWELL[s.cat] != null ? STOP_DWELL[s.cat] : 20); }
+    function stopAddMin(s){ if(s.cat === 'depart' || s.cat === 'arrive' || s.cat === 'rest') return 0; return stopDwell(s) + (s.detour || 0); }
+    function fmtMins(m){ if(m == null || m <= 0) return '\u2014'; const h = Math.floor(m/60), mm = m % 60; let out = ''; if(h) out += h + ' hr'; if(mm) out += (h ? ' ' : '') + mm + ' min'; return out; }
+
+    /* ---------- heads-up system: gotchas surfaced at every step ---------- */
+    // Per-stop alerts (reservations, closures, hazards, quirks) keyed by stop title.
+    const STOP_ALERT = {
+        "Arches Sunset Loop": "Timed-entry permit REQUIRED Apr\u2013Oct (recreation.gov). Book the instant your dates lock \u2014 afternoon slots sell out fast. No permit = turned away at the gate.",
+        "Desert Bistro": "Moab books out in summer \u2014 reserve dinner ahead, and note many kitchens close by 9 PM.",
+        "Virgin River Gorge": "Narrow, winding interstate canyon with no shoulder \u2014 nowhere to safely stop. Fuel up before you enter.",
+        "Snow Canyon State Park": "Day-use fee, no water or food inside. Black lava rock radiates heat \u2014 go early or it\u2019s an oven by midday.",
+        "EddieWorld": "Last reliable fuel, restrooms, and food before the Mojave crossing \u2014 top off here.",
+        "Cajon Pass": "Steep grade with heavy truck traffic and crosswinds \u2014 watch brake temps on the long descent.",
+        "Torrey Pines Bluffs": "June Gloom: the marine layer often greys out La Jolla until late afternoon \u2014 don\u2019t bank on a clear sunset. Cliff edges are unstable; stay on marked trails.",
+        "Imperial Sand Dunes": "No services for ~50 mi either side, and blowing sand crosses the highway in wind. This is the lowest, hottest stretch of I-8.",
+        "Yuma \u00B7 Date Shakes": "Crossing into Arizona \u2014 AZ does NOT observe daylight saving, so summer clocks match Pacific. Confirm your phone didn\u2019t jump an hour. Yuma regularly tops 110\u00B0F midday.",
+        "Mission San Xavier del Bac": "Active parish church \u2014 confirm it\u2019s open to visitors and dress respectfully. Free, donation-supported.",
+        "Saguaro NP West \u00B7 Sunset": "Bajada Loop Drive is partly graded dirt \u2014 fine for a car but slow. Watch for low-light wildlife on the road out.",
+        "White Sands National Park": "Closes WITHOUT notice for missile-range tests (often 1\u20133 hrs) \u2014 check the day-of schedule at nps.gov/whsa before committing. No food, gas, or shade inside; gate locks at sunset. Fuel & water up in Las Cruces first.",
+        "Old Mesilla Plaza": "You cross into Mountain time near the NM line \u2014 clocks jump forward an hour from Arizona.",
+        "Santa Fe Plaza": "Historic district parking is tight and metered \u2014 use a garage. Sits at ~7,200 ft, so pace yourself.",
+        "Raton Pass": "Tops out at 7,834 ft. Summer monsoon storms and lightning build fast over the pass \u2014 aim to crest before mid-afternoon."
+    };
+    // Per-day watch lists (2\u20134 punchy heads-ups) keyed by day id.
+    const DAY_WATCH = {
+        day1: [
+            "Arches needs a timed-entry permit (Apr\u2013Oct) \u2014 book it now on recreation.gov or you\u2019ll be turned away.",
+            "Eisenhower Tunnel & Vail Pass sit above 10,000 ft \u2014 expect ear-pop, weaker engine pull, and fast weather swings.",
+            "Glenwood Canyon (I-70) closes for rockfall and fire with little warning \u2014 check COtrip.org before you roll.",
+            "Top off fuel in Grand Junction; the byway down into Moab has long gaps."
+        ],
+        day2: [
+            "The San Rafael Swell is a 100+ mi no-services, spotty-signal void \u2014 full tank, water, and offline maps before you enter.",
+            "Summer highs cross 100\u00B0F by early afternoon \u2014 that\u2019s why the day targets a 3:30 PM arrival."
+        ],
+        day3: [
+            "Virgin River Gorge is a no-shoulder canyon interstate \u2014 don\u2019t plan to stop; fuel beforehand.",
+            "You cross into Pacific time entering Nevada \u2014 clocks fall back an hour.",
+            "Vegas check-in is usually 3\u20134 PM; ask to stash bags if you arrive early."
+        ],
+        day4: [
+            "EddieWorld in Yermo is your last reliable fuel and restroom before the Mojave.",
+            "Mojave heat + the Cajon grade punish a hot engine \u2014 watch the temp gauge and carry extra water/coolant.",
+            "June Gloom: the coast may stay grey until afternoon \u2014 don\u2019t count on a clear arrival sunset."
+        ],
+        day5: [
+            "I-8 drops below sea level through Imperial Valley \u2014 the hottest leg of the loop, regularly 110\u00B0F+. Start early.",
+            "The Yuma\u2013Gila Bend gap is long \u2014 keep the tank above half.",
+            "Entering Arizona: AZ ignores daylight saving, so summer clocks match Pacific \u2014 double-check your phone didn\u2019t jump."
+        ],
+        day6: [
+            "White Sands closes without notice for missile tests \u2014 check the day-of schedule (nps.gov/whsa) before committing.",
+            "No fuel, water, or shade inside the park and the gate locks at sunset \u2014 top off in Las Cruces.",
+            "You re-enter Mountain time near the NM line \u2014 clocks jump forward an hour from Arizona.",
+            "Late-June monsoon can bring afternoon dust storms (haboobs) on I-10 \u2014 if visibility drops, pull fully off the road and kill your lights."
+        ],
+        day7: [
+            "Longest leg of the loop \u2014 get the big I-25 miles done before midday heat and storms.",
+            "Raton Pass tops 7,834 ft; afternoon thunderstorms and lightning build fast \u2014 aim to crest before 3 PM.",
+            "Santa Fe & Albuquerque sit at 5,000\u20137,000 ft with tight metered downtowns \u2014 use a parking garage."
+        ]
+    };
+    /* ---------- cheapest-parking guidance for busy downtown areas ---------- */
+    const PARKING = {
+        "Arrive: Las Vegas Strip": "Most Strip casino garages now charge $15\u201325/day. Cheapest: self-park free at Sahara or Treasure Island, or the Fashion Show Mall garage (free ~3 hrs), and walk in. Your own hotel garage is free as a registered guest.",
+        "The Strip": "Skip $20+ valet \u2014 self-park free at an off-Strip casino (Sahara, TI) or your hotel garage as a guest. If you\u2019re drinking, rideshare back instead of paying twice.",
+        "El Charro Caf\u00E9": "Downtown Tucson meters are free after 5 PM and on Sundays. Otherwise the city Pennington St. or Centro garages run ~$1/hr \u2014 far cheaper than restaurant valet or flat-rate lots.",
+        "Old Mesilla Plaza": "Good news \u2014 free public lots ring the plaza off Calle de Santiago and Calle de Parian. Nothing in Mesilla is paid; don\u2019t circle for a closer spot.",
+        "La Posta de Mesilla": "Free plaza lots are a one-minute walk away \u2014 there\u2019s no paid parking in Mesilla, so just grab any open spot.",
+        "Albuquerque Old Town": "Free 2-hour lot behind the plaza on Romero St., plus free street parking a block out on Mountain Rd. \u2014 skip the paid museum lots.",
+        "Santa Fe Plaza": "Cheapest is a city-run garage \u2014 the Convention Center or Sandoval St. garage (~$1\u20132/hr, capped evening rates) beats private plaza lots. Metered street is free after 6 PM and on Sundays."
+    };
+    const POI_PARKING = {};
+    function poiParking(p){
+        if(POI_PARKING[p.id]) return POI_PARKING[p.id];
+        if(p.cat === 'town' || /downtown|old town|\bplaza\b|the strip|historic district|town square/i.test((p.name || '') + ' ' + (p.blurb || '')))
+            return 'Busy area \u2014 cheapest parking is usually a city-run garage or free street a block or two out. Skip flat-rate private lots and valet.';
+        return null;
+    }
+
+    /* ---------- detour estimator: how far a place sits off the planned drive ---------- */
+    const DETOUR_MPH = 45, DETOUR_ROAD_FACTOR = 1.35;
+    function detourFor(lat, lng, dayId){
+        if(typeof lat !== 'number' || typeof lng !== 'number') return null;
+        const anchors = routeAnchors();
+        let pool = anchors.filter(a=> a.dayId === dayId);
+        if(!pool.length) pool = anchors;
+        let off = Infinity;
+        pool.forEach(a=>{ const d = haversineMi(lat, lng, a.lat, a.lng); if(d < off) off = d; });
+        const driveMin = Math.round(off * DETOUR_ROAD_FACTOR / DETOUR_MPH * 60) * 2; // out-and-back
+        return { off, driveMin };
+    }
+    // Returns a detour callout only when the place is genuinely off the line (not basically on-route).
+    function detourNoteFor(lat, lng, dayId, dwellMin){
+        const e = detourFor(lat, lng, dayId);
+        if(!e || e.off < 1.5 || e.driveMin < 4) return null;
+        return { slight: e.off <= 20, drive: e.driveMin, total: e.driveMin + (dwellMin || 0), off: e.off };
+    }
+
+    // Trip-wide pre-flight watch list.
+    const TRIP_WATCH = [
+        "Book the Arches timed-entry permit the instant your dates are final (recreation.gov) \u2014 it gates Day 1.",
+        "Check White Sands\u2019 missile-range closure schedule before Day 6 \u2014 the park can shut for hours with no notice.",
+        "You cross several time-zone lines, and Arizona doesn\u2019t observe DST \u2014 sanity-check your clock at each state border.",
+        "This is a summer desert loop: 100\u2013115\u00B0F is normal. Water for everyone, start early, never leave people or pets in the car.",
+        "Download offline maps \u2014 Utah\u2019s San Rafael Swell and stretches of I-8/I-10 have no signal.",
+        "Late-June monsoon is starting in AZ/NM \u2014 watch for afternoon dust storms and flash-flood washes.",
+        "Keep the tank above half across the desert gaps: San Rafael Swell, Mojave, and Yuma\u2013Gila Bend.",
+        "Pack a desert kit: extra water, coolant, sunshade, a paper-map backup, and a car charger."
+    ];
     function el(html){ const t = document.createElement('template'); t.innerHTML = html.trim(); return t.content.firstElementChild; }
 
     /* ---------- SVG charts ---------- */
@@ -1230,9 +1774,11 @@
         planit.addEventListener('click', ()=> selectView('planning'));
         nav.appendChild(planit);
 
-        nav.appendChild(el('<div class="nav-label">Legs</div>'));
+        nav.appendChild(el('<div class="nav-label">Outbound \u00B7 Mountain to Coast</div>'));
 
+        let retLabelDone = false;
         TRIP.days.forEach(d => {
+            if(d.seg === 'ret' && !retLabelDone){ nav.appendChild(el('<div class="nav-label">Return \u00B7 Southern Loop</div>')); retLabelDone = true; }
             const done = dayDoneCount(d), total = d.stops.length;
             const complete = done === total;
             const item = el('<div class="nav-item' + (complete?' done':'') + '" data-view="'+d.id+'">'
@@ -1240,6 +1786,7 @@
                 + '<div class="nav-body">'
                     + '<h3>Day '+d.n+': '+d.title+'</h3>'
                     + '<p>'+d.from+' \u2192 '+d.to+'</p>'
+                    + '<div class="nav-date">'+fmtDateShort(dateForDay(d))+'</div>'
                     + '<div class="nav-progress"><i style="width:'+(done/total*100)+'%"></i></div>'
                 + '</div>'
                 + '<div class="nav-spark">'+areaChart(d.elevation, 54, 26, d.accent, {pad:2, sw:1.6, r:2})+'</div>'
@@ -1250,6 +1797,7 @@
             nav.appendChild(item);
         });
     }
+    function fmtDateShort(d){ return d.toLocaleDateString('en-US', { weekday:'short', month:'short', day:'numeric' }); }
 
     /* ============================================================
        RENDER: overview view
@@ -1262,20 +1810,20 @@
         const hero = el('<div class="hero">'
             + '<div class="hero-grad" style="background:linear-gradient(120deg,#0d9488 0%,#c2410c 42%,#7c3aed 70%,#0284c7 100%)">'
                 + topoSVG()
-                + '<div class="hero-kicker">Guided Overland Path</div>'
+                + '<div class="hero-kicker">Round-trip Southwest loop</div>'
                 + '<h2>Mountain&nbsp;to&nbsp;Coast Expedition</h2>'
-                + '<div class="hero-sub">Colorado Springs, CO \u2192 La Jolla, CA &middot; scenic pull-outs, artisanal coffee &amp; pristine stops</div>'
+                + '<div class="hero-sub">Colorado Springs \u21C4 La Jolla &middot; north via Utah &amp; Vegas, home on the southern route through Tucson, White Sands &amp; Santa Fe</div>'
                 + '<div class="hero-stats">'
-                    + hstat('Total distance', TOTAL_MI.toLocaleString(), 'mi')
+                    + hstat('Round trip', TOTAL_MI.toLocaleString(), 'mi')
                     + hstat('Drive time', fmtDur(TOTAL_MIN), '')
-                    + hstat('Legs', '4', 'days')
-                    + hstat('Elevation swing', '9,165\u2192 0', 'ft')
+                    + hstat('Legs', TRIP.days.length, 'days')
+                    + hstat('High point', '9,165', 'ft')
                 + '</div>'
             + '</div>'
             + '<div class="hero-elev">'
                 + areaChart(elevAll, 980, 64, '#ffffff', {pad:6, sw:2, dot:false})
-                + '<div class="elabel" style="left:14px;">Springs \u00B7 9,165 ft pass</div>'
-                + '<div class="elabel" style="right:14px;">Pacific \u00B7 sea level</div>'
+                + '<div class="elabel" style="left:14px;">Springs \u00B7 start</div>'
+                + '<div class="elabel" style="right:14px;">Raton \u00B7 home</div>'
             + '</div>'
         + '</div>');
         wrap.appendChild(hero);
@@ -1283,10 +1831,10 @@
         // stat tiles
         const fuelEst = estFuel(14, 4.40);
         const stats = el('<div class="stat-grid"></div>');
-        stats.appendChild(statTile('\uD83D\uDEE3\uFE0F','Route','4 states', '<small>CO \u00B7 UT \u00B7 AZ \u00B7 NV \u00B7 CA</small>'));
-        stats.appendChild(statTile('\uD83D\uDCCD','Stops','30', '<small>logged checkpoints</small>'));
+        stats.appendChild(statTile('\uD83D\uDEE3\uFE0F','Route','6 states', '<small>CO \u00B7 UT \u00B7 AZ \u00B7 NV \u00B7 CA \u00B7 NM</small>'));
+        stats.appendChild(statTile('\uD83D\uDCCD','Stops',ALL_STOPS, '<small>logged checkpoints</small>'));
         stats.appendChild(statTile('\u26FD','Fuel est.','$'+fuelEst.cost, '<small>'+fuelEst.gal+' gal @ 14 mpg</small>'));
-        stats.appendChild(statTile('\uD83C\uDFE8','Nights','3', '<small>Moab \u00B7 St. George \u00B7 Vegas</small>'));
+        stats.appendChild(statTile('\uD83C\uDFE8','On-road nights','5', '<small>Moab \u00B7 St.G \u00B7 Vegas \u00B7 Tucson \u00B7 Las&nbsp;Cruces</small>'));
         wrap.appendChild(stats);
 
         // pre-departure command center
@@ -1303,13 +1851,25 @@
         cols.appendChild(prepColNode('\uD83C\uDF92 Packing', 'packing', TRIP.prep.packing));
         wrap.appendChild(prep);
 
+        // trip-wide heads-up / gotchas
+        const watchCard = el('<div class="card watch-card-lg"><div class="card-title">\u26A0\uFE0F Before you roll \u00B7 trip-wide gotchas</div>'
+            + '<ul class="watch-list">' + TRIP_WATCH.map(w=>'<li>'+w+'</li>').join('') + '</ul></div>');
+        wrap.appendChild(watchCard);
+
         // full route map
         const map = el('<div class="map-shell">'
             + '<div class="map-widget" id="map-overview"></div>'
             + '<div class="map-legend" id="legend-overview"></div>'
-            + '<a class="map-cta" target="_blank" rel="noopener" href="'+gdir(['Colorado Springs, CO','Moab, UT','St. George, UT','Las Vegas, NV','La Jolla, San Diego, CA'])+'">Open full route \u2197</a>'
+            + '<a class="map-cta" target="_blank" rel="noopener" href="'+gdir(FULL_ROUTE)+'">Open full route \u2197</a>'
         + '</div>');
         wrap.appendChild(map);
+
+        // embedded Google Maps full-loop route
+        wrap.appendChild(el('<div class="gmap-embed">'
+            + '<div class="gmap-embed-head"><span>\uD83D\uDDFA\uFE0F Google Maps \u00B7 full round-trip loop</span>'
+            + '<a target="_blank" rel="noopener" href="'+gdir(FULL_ROUTE)+'">Open full route \u2197</a></div>'
+            + '<iframe loading="lazy" referrerpolicy="no-referrer-when-downgrade" src="'+gembed(FULL_ROUTE)+'"></iframe>'
+        + '</div>'));
 
         // elevation profile card
         const elevCard = el('<div class="card"><div class="card-title">\u26F0\uFE0F Elevation profile \u00B7 alpine to sea level</div>'
@@ -1398,6 +1958,104 @@
         return '<svg class="hero-topo" viewBox="0 0 960 120" preserveAspectRatio="none">'+paths+'</svg>';
     }
 
+    /* ============================================================
+       PER-DAY THEMED HERO SCENES  ·  the place you'll actually be
+       ============================================================ */
+    const DAY_THEME = {
+        day1: { scene:'alpine',     sky:'linear-gradient(160deg,#0f766e 0%,#0d9488 48%,#5eead4 100%)' },
+        day2: { scene:'redrock',    sky:'linear-gradient(160deg,#7c2d12 0%,#c2410c 50%,#fb923c 100%)' },
+        day3: { scene:'neon',       sky:'linear-gradient(165deg,#1e1b4b 0%,#4c1d95 45%,#7c3aed 78%,#db2777 100%)' },
+        day4: { scene:'coast',      sky:'linear-gradient(160deg,#0c4a6e 0%,#0284c7 48%,#7dd3fc 100%)' },
+        day5: { scene:'saguaro',    sky:'linear-gradient(160deg,#7c2d12 0%,#d97706 46%,#fcd34d 100%)' },
+        day6: { scene:'gypsum',     sky:'linear-gradient(160deg,#0e7490 0%,#0891b2 42%,#cffafe 100%)' },
+        day7: { scene:'highdesert', sky:'linear-gradient(160deg,#14532d 0%,#16a34a 46%,#bbf7d0 100%)' }
+    };
+    const SVG_OPEN = '<svg class="scene-svg" viewBox="0 0 1200 220" preserveAspectRatio="xMidYMax slice">';
+    function sceneSun(cx, cy, r, fill){ return '<circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" fill="'+fill+'"/>'; }
+    function saguaro(x, h){
+        const y1 = 220 - Math.round(h*0.5), y2 = 220 - Math.round(h*0.68), aH = Math.round(h*0.3);
+        return '<path d="M'+x+' 220 V'+(220-h)+'"/>'
+             + '<path d="M'+x+' '+y1+' H'+(x-20)+' V'+(y1-aH)+'"/>'
+             + '<path d="M'+x+' '+y2+' H'+(x+20)+' V'+(y2-aH)+'"/>';
+    }
+    const SCENES = {
+        alpine(){
+            let pines = '';
+            for(let x=10; x<1200; x+=46){ const h = 22 + ((x*7)%18); pines += '<path d="M'+(x-11)+' 220 L'+(x+11)+' 220 L'+x+' '+(190-h)+' Z"/>'; }
+            return SVG_OPEN
+                + sceneSun(990,46,30,'rgba(255,255,255,0.22)')
+                + '<path fill="rgba(255,255,255,0.13)" d="M0 220 L0 140 L150 64 L270 132 L390 52 L520 140 L660 70 L820 140 L960 60 L1110 140 L1200 100 L1200 220Z"/>'
+                + '<path fill="rgba(255,255,255,0.22)" d="M150 64 L176 96 L124 96Z M390 52 L420 90 L360 90Z M960 60 L988 96 L932 96Z"/>'
+                + '<path fill="rgba(6,38,36,0.34)" d="M0 220 L0 170 L180 108 L340 172 L500 104 L680 178 L860 116 L1040 180 L1200 124 L1200 220Z"/>'
+                + '<g fill="rgba(5,28,26,0.5)">'+pines+'</g>'
+                + '</svg>';
+        },
+        redrock(){
+            return SVG_OPEN
+                + sceneSun(250,60,38,'rgba(255,240,210,0.30)')
+                + '<path fill="rgba(120,40,18,0.28)" d="M0 220 L0 150 L120 150 L150 96 L300 96 L330 150 L520 150 L520 220Z"/>'
+                + '<path fill="rgba(80,24,10,0.42)" d="M620 220 L620 120 L660 120 L660 84 L760 84 L760 120 L820 120 L820 220Z"/>'
+                + '<g fill="none" stroke="rgba(60,18,8,0.5)" stroke-width="26"><path d="M900 220 L900 150 Q900 96 956 96 Q1012 96 1012 150 L1012 220"/></g>'
+                + '<path fill="rgba(60,18,8,0.5)" d="M0 220 L0 192 L1200 178 L1200 220Z"/>'
+                + '</svg>';
+        },
+        neon(){
+            let b = '';
+            for(let x=0; x<1200; x+=58){ const h = 70 + ((x*13)%120); b += '<rect x="'+x+'" y="'+(220-h)+'" width="46" height="'+h+'" rx="3"/>'; }
+            let win = '';
+            for(let x=8; x<1200; x+=58){ for(let y=150; y<214; y+=16){ if((x+y)%3===0) win += '<rect x="'+(x+8)+'" y="'+y+'" width="6" height="8" fill="rgba(255,236,150,0.5)"/>'; } }
+            return SVG_OPEN
+                + '<g fill="rgba(255,255,255,0.08)"><rect x="558" y="0" width="3" height="220"/><rect x="600" y="0" width="3" height="220"/><rect x="642" y="0" width="3" height="220"/></g>'
+                + '<g fill="rgba(20,10,40,0.5)">'+b+'</g>'
+                + win
+                + sceneSun(1040,52,26,'rgba(244,114,182,0.55)')
+                + '</svg>';
+        },
+        coast(){
+            return SVG_OPEN
+                + sceneSun(980,58,40,'rgba(255,241,200,0.45)')
+                + '<path fill="rgba(255,255,255,0.12)" d="M0 150 Q300 130 600 150 T1200 150 L1200 168 Q900 152 600 168 T0 166 Z"/>'
+                + '<path fill="rgba(255,255,255,0.18)" d="M0 178 Q300 160 600 180 T1200 176 L1200 196 Q900 182 600 196 T0 194 Z"/>'
+                + '<path fill="rgba(8,40,70,0.4)" d="M0 200 Q300 188 600 202 T1200 198 L1200 220 L0 220Z"/>'
+                + '<g fill="none" stroke="rgba(8,40,70,0.55)" stroke-width="10" stroke-linecap="round"><path d="M120 220 Q132 150 128 110"/><path d="M128 110 Q90 96 70 112 M128 110 Q166 96 186 112 M128 110 Q108 80 92 72 M128 110 Q150 80 164 74"/></g>'
+                + '</svg>';
+        },
+        saguaro(){
+            let cac = '';
+            for(let x=80; x<1200; x+=190){ const h = 70 + ((x*5)%40); cac += saguaro(x, h); }
+            return SVG_OPEN
+                + sceneSun(600,74,46,'rgba(255,224,150,0.5)')
+                + '<path fill="rgba(124,45,18,0.28)" d="M0 220 L0 168 L260 132 L520 168 L820 128 L1080 168 L1200 140 L1200 220Z"/>'
+                + '<g fill="none" stroke="rgba(70,24,8,0.6)" stroke-width="13" stroke-linecap="round">'+cac+'</g>'
+                + '</svg>';
+        },
+        gypsum(){
+            let yuc = '';
+            for(let x=140; x<1200; x+=240){ yuc += '<g fill="none" stroke="rgba(14,80,90,0.4)" stroke-width="7" stroke-linecap="round"><path d="M'+x+' 220 L'+x+' 176 M'+x+' 188 l-16 -18 M'+x+' 188 l16 -18 M'+x+' 184 l-22 -6 M'+x+' 184 l22 -6"/></g>'; }
+            return SVG_OPEN
+                + sceneSun(990,52,30,'rgba(255,255,255,0.32)')
+                + '<path fill="rgba(255,255,255,0.30)" d="M0 220 L0 176 Q200 150 400 176 T800 176 T1200 168 L1200 220Z"/>'
+                + '<path fill="rgba(255,255,255,0.45)" d="M0 220 L0 196 Q260 172 520 196 T1040 192 T1200 196 L1200 220Z"/>'
+                + yuc
+                + '</svg>';
+        },
+        highdesert(){
+            return SVG_OPEN
+                + sceneSun(250,56,32,'rgba(255,255,255,0.20)')
+                + '<path fill="rgba(255,255,255,0.12)" d="M0 220 L0 150 L180 96 L320 150 L470 96 L640 150 L820 100 L1010 150 L1200 110 L1200 220Z"/>'
+                + '<path fill="rgba(8,50,30,0.34)" d="M0 220 L0 170 L260 142 L260 120 L420 120 L420 142 L700 168 L900 134 L900 116 L1040 116 L1040 140 L1200 160 L1200 220Z"/>'
+                + '<path fill="rgba(6,40,24,0.5)" d="M0 220 L0 198 L1200 188 L1200 220Z"/>'
+                + '<g stroke="rgba(255,255,255,0.4)" stroke-width="4" stroke-dasharray="14 16"><path d="M560 220 L604 196"/></g>'
+                + '</svg>';
+        }
+    };
+    function dayScene(d){
+        const t = DAY_THEME[d.id];
+        const inner = (t && SCENES[t.scene]) ? SCENES[t.scene]() : topoSVG();
+        return '<div class="hero-scene">' + inner + '</div><div class="hero-scrim"></div>';
+    }
+    function daySky(d){ const t = DAY_THEME[d.id]; return t ? t.sky : ('linear-gradient(135deg,'+d.accent+',var(--brand))'); }
+
     function estFuel(mpg, price){
         const gal = TOTAL_MI / mpg;
         return { gal: Math.round(gal), cost: Math.round(gal*price).toLocaleString(), range: Math.round(mpg*TANK_GAL), fills: Math.ceil(TOTAL_MI/(mpg*TANK_GAL)) };
@@ -1429,9 +2087,9 @@
 
         const elevChange = d.elevTo - d.elevFrom;
         const hero = el('<div class="hero">'
-            + '<div class="hero-grad">'
-                + topoSVG()
-                + '<div class="hero-kicker">Day '+d.n+' \u00B7 Leg '+d.n+' of 4</div>'
+            + '<div class="hero-grad hero-scenic" style="background:'+daySky(d)+'">'
+                + dayScene(d)
+                + '<div class="hero-kicker">Day '+d.n+' of '+TRIP.days.length+' \u00B7 '+(d.seg==='ret'?'Return leg':'Outbound leg')+' \u00B7 '+fmtDate(dateForDay(d))+'</div>'
                 + '<h2>'+d.from+' \u2192 '+d.to+'</h2>'
                 + '<div class="hero-sub">'+d.title+'</div>'
                 + '<div class="hero-stats">'
@@ -1452,6 +2110,14 @@
         + '</div>');
         view.appendChild(map);
 
+        // embedded Google Maps route with the day's waypoints
+        const rq = routeQList(d);
+        view.appendChild(el('<div class="gmap-embed">'
+            + '<div class="gmap-embed-head"><span>\uD83D\uDDFA\uFE0F Google Maps \u00B7 route &amp; '+rq.length+' waypoints</span>'
+            + '<a target="_blank" rel="noopener" href="'+gdir(rq)+'">Open with stops \u2197</a></div>'
+            + '<iframe loading="lazy" referrerpolicy="no-referrer-when-downgrade" src="'+gembed(rq)+'"></iframe>'
+        + '</div>'));
+
         // weather
         view.appendChild(el('<div class="weather-container"><a class="weatherwidget-io" href="'+d.weather.href+'" data-label_1="'+d.weather.l1+'" data-label_2="'+d.weather.l2+'" data-theme="pure" data-basecolor="#ffffff" data-textcolor="#1c1917">'+d.weather.l1+' '+d.weather.l2+'</a></div>'));
 
@@ -1465,8 +2131,19 @@
         // PATH pane
         const path = el('<div class="tab-pane active" id="'+d.id+'-path"></div>');
         path.appendChild(el('<div class="safety"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z" stroke-linecap="round" stroke-linejoin="round"/></svg><div><b>Safety Protocol.</b> '+d.safety+'</div></div>'));
+        const watch = DAY_WATCH[d.id];
+        if(watch && watch.length){
+            path.appendChild(el('<div class="watch-card"><div class="watch-title">\u26A0\uFE0F Watch for today</div><ul class="watch-list">'
+                + watch.map(w=>'<li>'+w+'</li>').join('') + '</ul></div>'));
+        }
         path.appendChild(skyCard(d));
         const sg = stargazeCard(d); if(sg) path.appendChild(sg);
+
+        // time budget: pure driving + recommended time at stops
+        const stopsMin = d.stops.reduce((a,s)=>a+stopAddMin(s),0);
+        if(d.driveMin && stopsMin){
+            path.appendChild(el('<div class="pace-note">\uD83D\uDD52 <b>'+fmtDur(d.driveMin)+'</b> rolling \u00B7 <b>~'+fmtMins(stopsMin)+'</b> recommended at stops \u00B7 \u2248 <b>'+fmtDur(d.driveMin+stopsMin)+'</b> door-to-door</div>'));
+        }
 
         // filters
         const usedCats = [...new Set(d.stops.map(s=>s.cat))];
@@ -1511,10 +2188,20 @@
         const key = d.id + ':' + i;
         const done = isDone(key);
         const cat = CATS[s.cat];
-        const sun = sunCalc(dayDate(d.n), s.lat, s.lng, (s.tz != null ? s.tz : (d.tz != null ? d.tz : -7)));
+        const sun = sunCalc(dateForDay(d), s.lat, s.lng, (s.tz != null ? s.tz : (d.tz != null ? d.tz : -7)));
         const golden = (s.cat === 'photo' || s.cat === 'activity')
             ? '<span class="golden-chip">\uD83C\uDF05 Golden ' + fmtClock(sun.goldenPMstart) + '\u2013' + fmtClock(sun.sunset) + '</span>' : '';
         const loreLine = s.lore ? '<div class="detail-note" style="border-left-color:var(--accent-soft)">\uD83D\uDCA1 ' + s.lore + '</div>' : '';
+        const dwellMin = stopDwell(s), addMin = stopAddMin(s);
+        const showStay = !(s.cat === 'depart' || s.cat === 'arrive' || s.cat === 'rest') && dwellMin > 0;
+        const dwellChip = showStay ? '<span class="dwell-chip">\u23F1\uFE0F ~' + fmtMins(dwellMin) + '</span>' : '';
+        const alertChip = s.alert ? '<span class="alert-chip" title="Heads-up">\u26A0\uFE0F Heads-up</span>' : '';
+        const alertNote = s.alert ? '<div class="alert-note"><span class="an-ic">\u26A0\uFE0F</span><div>' + s.alert + '</div></div>' : '';
+        const coffeeVibe = (s.cat === 'coffee' && s.vibe) ? '<div class="coffee-vibe">\u2615 ' + s.vibe + '</div>' : '';
+        const parkChip = s.parking ? '<span class="park-chip" title="Cheapest parking">\uD83C\uDD7F\uFE0F Parking</span>' : '';
+        const parkNote = s.parking ? '<div class="park-note"><span class="pn-ic">\uD83C\uDD7F\uFE0F</span><div><b>Cheapest parking.</b> ' + s.parking + '</div></div>' : '';
+        const detourChip = (s.detour && s.detour > 0) ? '<span class="detour-chip" title="Off-route detour">\u21A9\uFE0F +' + fmtMins(s.detour) + ' detour</span>' : '';
+        const detourNote = (s.detour && s.detour > 0) ? '<div class="detour-note">\u21A9\uFE0F <b>Detour stop:</b> ~' + fmtMins(s.detour) + ' of extra driving off the line \u00B7 ~' + fmtMins(s.detour + dwellMin) + ' round trip with the visit.</div>' : '';
         const row = el('<div class="leg" data-cat="'+s.cat+'" style="--lc:'+cat.color+'">'
             + '<div class="leg-dot" style="border-color:'+cat.color+'">'+cat.emoji+'</div>'
             + '<div class="stop-card'+(done?' checked':'')+(isConfirmed('stop-'+d.id+'-'+i)?' confirmed':'')+'">'
@@ -1527,11 +2214,17 @@
                             + '<span class="tag '+s.cat+'">'+cat.label+'</span>'
                             + (s.leg ? '<span class="stop-leg-meta">'+s.leg+'</span>' : '')
                             + golden
+                            + dwellChip
+                            + alertChip
+                            + parkChip
+                            + detourChip
                         + '</div>'
                         + '<div class="stop-desc">'+s.desc+'</div>'
                         + '<div class="stop-detail">'
                             + '<div class="detail-grid">'
                                 + detailCell('Leg', s.leg || '\u2014')
+                                + detailCell('\u23F1\uFE0F Suggested stay', showStay ? fmtMins(dwellMin) : '\u2014')
+                                + detailCell('\u2795 Adds to day', addMin > 0 ? ('~' + fmtMins(addMin) + (s.detour ? ' \u00B7 incl. detour' : '')) : '\u2014')
                                 + detailCell('\uD83C\uDF05 Sunrise', fmtClock(sun.sunrise))
                                 + detailCell('\uD83C\uDF06 Sunset', fmtClock(sun.sunset))
                                 + detailCell('Coordinates', s.lat.toFixed(3)+', '+s.lng.toFixed(3))
@@ -1539,6 +2232,10 @@
                             + (s.voice
                                 ? '<div class="detail-note">\u201C'+s.detail+'\u201D</div>'
                                 : '<p style="font-size:0.88rem;color:var(--dim);margin-top:13px">'+s.detail+'</p>')
+                            + coffeeVibe
+                            + alertNote
+                            + parkNote
+                            + detourNote
                             + loreLine
                             + '<div class="stop-links">'
                                 + '<a class="mini-link" target="_blank" rel="noopener" href="'+gmaps(s.gmapsQ)+'">\uD83D\uDCCD Maps</a>'
@@ -1628,7 +2325,7 @@
     }
 
     function skyCard(d){
-        const date = dayDate(d.n);
+        const date = dateForDay(d);
         const dest = d.waypoints[d.waypoints.length - 1];
         const sun = sunCalc(date, dest[0], dest[1], d.tz);
         const arrive = d.stops.find(s => s.cat === 'arrive');
@@ -1656,7 +2353,7 @@
 
     function stargazeCard(d){
         if(!d.darkSky) return null;
-        const night = dayDate(d.n);
+        const night = dateForDay(d);
         const moon = moonInfo(night);
         const q = stargazeQuality(moon.illum);
         return el('<div class="card stargaze"><div class="card-title">\u2728 Night sky \u00B7 ' + d.darkSky.name + '</div>'
@@ -1681,13 +2378,22 @@
         + '</div>');
     }
 
+    function questForYou(q){
+        if(q.fy) return true;
+        return /hike|trail|dunes|wave|towers|overlook|sunset|sunrise|canyon|falls|arch|point|springs|volcano|valley|park|bluff|mesa|rim/i.test((q.name || '') + ' ' + (q.desc || ''));
+    }
     function questsPane(d){
         const pane = el('<div class="tab-pane" id="' + d.id + '-quests"></div>');
-        pane.appendChild(el('<p class="sq-intro">Optional detours that turn a great drive into a legendary one. Each shows the rough time it adds to the leg \u2014 pick one if you\u2019re running ahead of the arrival target.</p>'));
+        pane.appendChild(el('<p class="sq-intro">Optional detours that turn a great drive into a legendary one. Each shows the rough time it adds to the leg. <span class="sq-foryou-intro">\u2605 <b>Your vibe</b> marks the natural attractions &amp; short photogenic hikes \u2014 with the best light to shoot them.</span></p>'));
         (d.sideQuests || []).forEach(q=>{
-            const card = el('<div class="sq-card">'
+            const fy = questForYou(q);
+            const meta = (q.walk ? '<span class="sq-chip walk">\uD83E\uDD7E ' + q.walk + '</span>' : '')
+                       + (q.light ? '<span class="sq-chip light">\uD83D\uDCF8 ' + q.light + '</span>' : '');
+            const card = el('<div class="sq-card' + (fy ? ' fy' : '') + '">'
                 + '<div class="sq-ic">' + q.ic + '</div>'
-                + '<div class="sq-main"><h4>' + q.name + ' <span class="sq-add">' + q.add + '</span></h4><p>' + q.desc + '</p>'
+                + '<div class="sq-main"><h4>' + q.name + ' <span class="sq-add">' + q.add + '</span>' + (fy ? ' <span class="foryou-pill">\u2605 Your vibe</span>' : '') + '</h4>'
+                + (meta ? '<div class="sq-meta">' + meta + '</div>' : '')
+                + '<p>' + q.desc + '</p>'
                 + '<div class="stop-links"><a class="mini-link" target="_blank" rel="noopener" href="' + gmaps(q.q) + '">\uD83D\uDCCD Open in Maps</a></div></div>'
             + '</div>');
             addMagnet(card, 1, 0.04);
@@ -1793,13 +2499,16 @@
 
     function poiCard(p){
         const c = POI_CATS[p.cat], day = TRIP.days.find(d=>d.id===p.day);
+        const fyPoi = ['scenic','park','hike','water'].includes(p.cat) || /coffee|roaster|caf[e\u00E9]/i.test(p.name + ' ' + p.blurb);
         const card = el('<div class="poi-card" data-cat="'+p.cat+'" data-leg="'+p.day+'" data-id="'+p.id+'">'
             + '<div class="poi-head">'
                 + '<div class="poi-ic" style="background:'+c.color+'22">'+c.emoji+'</div>'
-                + '<div class="poi-title"><h4>'+p.name+'</h4><div class="poi-tags"><span class="tag" style="background:'+c.color+'1f;color:'+c.color+'">'+c.label+'</span><span class="poi-leg">Day '+day.n+'</span></div></div>'
+                + '<div class="poi-title"><h4>'+p.name+'</h4><div class="poi-tags"><span class="tag" style="background:'+c.color+'1f;color:'+c.color+'">'+c.label+'</span><span class="poi-leg">Day '+day.n+'</span><span class="dwell-chip">\u23F1\uFE0F ~'+fmtMins(POI_DWELL[p.cat]||30)+'</span>'+(fyPoi?'<span class="foryou-pill">\u2605 Your vibe</span>':'')+'</div></div>'
                 + '<button class="poi-fav'+(isFav(p.id)?' on':'')+'" title="Favorite">'+(isFav(p.id)?'\u2605':'\u2606')+'</button>'
             + '</div>'
             + '<div class="poi-blurb">'+p.blurb+'</div>'
+            + (function(){ const dt = detourNoteFor(p.lat, p.lng, p.day, POI_DWELL[p.cat]||30); return dt ? '<div class="detour-note">\u21A9\uFE0F <b>'+(dt.slight?'Slight detour':'Detour')+':</b> ~'+fmtMins(dt.drive)+' of extra driving \u00B7 ~'+fmtMins(dt.total)+' round trip with the stop.</div>' : ''; })()
+            + (poiParking(p) ? '<div class="poi-park">\uD83C\uDD7F\uFE0F <b>Cheapest parking:</b> '+poiParking(p)+'</div>' : '')
             + '<div class="poi-actions">'
                 + '<button class="add-btn'+(isAdded(p.day,p.id)?' added':'')+'" data-poi="'+p.id+'" data-day="'+p.day+'">'+(isAdded(p.day,p.id)?('\u2713 Added to Day '+day.n):('\uFF0B Add to Day '+day.n))+'</button>'
                 + '<a class="mini-link" target="_blank" rel="noopener" href="'+gmaps(p.q)+'" title="Open in Google Maps">\uD83D\uDCCD</a>'
@@ -1918,7 +2627,8 @@
     // Curated open items that aren't derivable from the stop list.
     const PLAN_EXTRA = {
         trip: [
-            { kind:'book',     label:'Buy the \u201CAmerica the Beautiful\u201D parks pass', detail:'$80 covers Arches, Colorado NM and other federal sites \u2014 cheaper than paying per park.' },
+            { kind:'research', label:'Lock in travel dates & nights in San Diego', detail:'Set the departure date and how many nights on the coast before the southern return \u2014 the return dates compute from these (controls are in the top bar).' },
+            { kind:'book',     label:'Buy the \u201CAmerica the Beautiful\u201D parks pass', detail:'$80 covers Arches, Saguaro, White Sands and other federal sites \u2014 far cheaper than paying per park.' },
             { kind:'pack',     label:'Download offline maps for the UT & NV desert', detail:'Long no-service stretches across the San Rafael Swell and Mojave \u2014 cache Google Maps offline first.' },
             { kind:'pack',     label:'Pre-trip vehicle check + 36-gal fuel plan', detail:'Tire pressure, fluids, and the top-off cadence: Grand Junction \u2192 Salina \u2192 Mojave.' },
             { kind:'research', label:'Confirm roadside assistance coverage', detail:'Verify AAA / insurance covers remote desert towing before departure.' }
@@ -1937,13 +2647,26 @@
         day4: [
             { kind:'research', label:'Confirm the La Jolla arrival \u2014 lodging or host', detail:'Lock down where you\u2019re staying on the coast for the final night.', q:'La Jolla San Diego CA' },
             { kind:'meal',     label:'Pick a Mojave lunch stop', detail:'EddieWorld (Yermo) vs. Baker \u2014 decide the midday break before Cajon Pass.', q:'EddieWorld Yermo CA' }
+        ],
+        day5: [
+            { kind:'research', label:'Saguaro NP \u2014 pick the sunset district', detail:'The west unit (Tucson Mountains) has the densest cactus forest and best sunset; decide west vs east.', q:'Saguaro National Park' },
+            { kind:'pack',     label:'Hydration plan for the Imperial Valley / Yuma heat', detail:'I-8 dips below sea level and is the hottest stretch of the loop \u2014 carry extra water.' }
+        ],
+        day6: [
+            { kind:'research', label:'White Sands \u2014 check missile-range closures & sunset', detail:'The park and US-70 close during White Sands Missile Range tests; verify the schedule and time the Dunes Drive for sunset.', q:'White Sands National Park hours' },
+            { kind:'pack',     label:'Grab a White Sands sled at the visitor center', detail:'A plastic saucer + wax makes the gypsum dunes a blast \u2014 decide to buy/rent on arrival.' }
+        ],
+        day7: [
+            { kind:'research', label:'Meow Wolf Santa Fe \u2014 reserve timed tickets (optional)', detail:'If you add the immersive-art stop, book ahead \u2014 it sells out.', q:'Meow Wolf Santa Fe tickets' },
+            { kind:'research', label:'Check Raton Pass conditions before the climb', detail:'Afternoon storms (and off-season snow) hit 7,834 ft \u2014 verify before the final push home.', q:'Raton Pass road conditions' }
         ]
     };
 
     function planItemsForDay(d){
         const items = [];
-        items.push({ id:'lodge-'+d.id, kind:'lodging',
-            label:'Confirm where you\u2019re sleeping in ' + d.to,
+        const decided = (d.lodging||[]).some(l=>l.status === 'decided');
+        items.push({ id:'lodge-'+d.id, kind:'lodging', decided:decided,
+            label: decided ? ('Lodging set \u2014 ' + d.to) : ('Confirm where you\u2019re sleeping in ' + d.to),
             detail:(d.lodging||[]).map(l=>l.name).join('  \u00B7  ') || 'No options shortlisted yet',
             q:(d.lodging && d.lodging[0]) ? d.lodging[0].gmapsQ : null });
         d.stops.forEach((s,i)=>{
@@ -1964,7 +2687,7 @@
             items:(PLAN_EXTRA.trip || []).map((t,k)=>({ id:'plan-trip-'+k, kind:t.kind, label:t.label, detail:t.detail, q:t.q })) });
         TRIP.days.forEach(d=> groups.push({ key:d.id, title:'Day '+d.n+' \u00B7 '+d.from+' \u2192 '+d.to, accent:d.accent, items:planItemsForDay(d) }));
         groups.forEach(g=>{
-            g.items.forEach(it=> it.met = isConfirmed(it.id));
+            g.items.forEach(it=> it.met = isConfirmed(it.id) || !!it.decided);
             plan.tasks.filter(t=>t.group===g.key).forEach(t=> g.items.push({ id:t.id, kind:'custom', label:t.label, detail:'', met:t.done, custom:true }));
         });
         return groups;
@@ -2314,7 +3037,7 @@
         const numEl = document.getElementById('cdNum'), metaEl = document.getElementById('cdMeta');
         if(!numEl) return;
         const start = getTripStart(); start.setHours(8,0,0,0);
-        const end = dayDate(4);
+        const end = dateForDay(TRIP.days[TRIP.days.length - 1]);
         const now = new Date();
         const ms = start - now;
         if(ms > 0){
@@ -2357,9 +3080,129 @@
     function rebuild(){
         Object.keys(maps).forEach(k=>{ try { maps[k].remove(); } catch(e){} delete maps[k]; });
         Object.keys(markersByDay).forEach(k=> delete markersByDay[k]);
+        renderNav();
         renderContent();
         reloadWeather();
         selectView(currentView || 'overview');
+    }
+
+    /* ============================================================
+       UP NEXT  ·  live "discover upcoming places" from current location
+       ============================================================ */
+    const UP = { pos:null };
+    function toRad(d){ return d * Math.PI / 180; }
+    function haversineMi(aLat, aLng, bLat, bLng){
+        const R = 3958.8, dLat = toRad(bLat - aLat), dLng = toRad(bLng - aLng);
+        const s = Math.sin(dLat/2)**2 + Math.cos(toRad(aLat))*Math.cos(toRad(bLat))*Math.sin(dLng/2)**2;
+        return 2 * R * Math.asin(Math.sqrt(s));
+    }
+    function compassDir(aLat, aLng, bLat, bLng){
+        const y = Math.sin(toRad(bLng-aLng))*Math.cos(toRad(bLat));
+        const x = Math.cos(toRad(aLat))*Math.sin(toRad(bLat)) - Math.sin(toRad(aLat))*Math.cos(toRad(bLat))*Math.cos(toRad(bLng-aLng));
+        const brng = (Math.atan2(y, x)*180/Math.PI + 360) % 360;
+        return ['N','NE','E','SE','S','SW','W','NW'][Math.round(brng/45) % 8];
+    }
+    function fmtMi(mi){ if(mi < 0.1) return 'here'; if(mi < 10) return mi.toFixed(1)+' mi'; return Math.round(mi)+' mi'; }
+    function routeAnchors(){
+        const out = [];
+        TRIP.days.forEach((d, di)=> (d.stops || []).forEach((s, i)=> out.push({ di, dayId:d.id, dayN:d.n, dayTo:d.to, idx:i, title:s.title, cat:s.cat, lat:s.lat, lng:s.lng })));
+        return out;
+    }
+    function upCandidates(){
+        const own = (custom.own || []).filter(o=> o && typeof o.lat === 'number' && typeof o.lng === 'number' && o.day);
+        return CATALOG.concat(own);
+    }
+    function computeUpNext(pos){
+        const anchors = routeAnchors();
+        let near = anchors[0], nd = Infinity;
+        anchors.forEach(a=>{ const d = haversineMi(pos.lat, pos.lng, a.lat, a.lng); if(d < nd){ nd = d; near = a; } });
+        const flatIdx = anchors.indexOf(near);
+        const nextStop = anchors.slice(flatIdx+1).find(a=> a.cat !== 'rest') || null;
+        let nextDest = anchors.slice(flatIdx+1).find(a=> a.cat === 'arrive') || anchors[anchors.length-1];
+        const cand = upCandidates().map(p=>({ p, dIdx: TRIP.days.findIndex(d=> d.id === p.day), dist: haversineMi(pos.lat, pos.lng, p.lat, p.lng) }));
+        const ahead = cand.filter(c=> c.dIdx >= near.di);
+        const pool = (ahead.length >= 5 ? ahead : cand).slice();
+        pool.sort((a, b)=> a.dist - b.dist);
+        return { near, nearDist: nd, nextStop, nextDest, list: pool.slice(0, 12), pos };
+    }
+    function renderUpNext(ctx){
+        const guess = document.getElementById('unGuess'), listEl = document.getElementById('unList');
+        document.getElementById('unStatus').textContent = 'Located \u00B7 near ' + ctx.near.title + ' (' + fmtMi(ctx.nearDist) + ')';
+        let gh = '';
+        if(ctx.nextStop){
+            const dir = compassDir(ctx.pos.lat, ctx.pos.lng, ctx.nextStop.lat, ctx.nextStop.lng);
+            gh += '<div class="ug-row"><span class="ug-k">Next stop</span><b>'+ctx.nextStop.title+'</b><span class="ug-meta">'+fmtMi(haversineMi(ctx.pos.lat, ctx.pos.lng, ctx.nextStop.lat, ctx.nextStop.lng))+' '+dir+'</span></div>';
+        }
+        if(ctx.nextDest){
+            const dir = compassDir(ctx.pos.lat, ctx.pos.lng, ctx.nextDest.lat, ctx.nextDest.lng);
+            gh += '<div class="ug-row"><span class="ug-k">Heading to</span><b>'+(ctx.nextDest.dayTo || ctx.nextDest.title)+'</b><span class="ug-meta">'+fmtMi(haversineMi(ctx.pos.lat, ctx.pos.lng, ctx.nextDest.lat, ctx.nextDest.lng))+' '+dir+'</span></div>';
+        }
+        guess.innerHTML = gh; guess.hidden = !gh;
+        listEl.innerHTML = '';
+        if(!ctx.list.length){ listEl.innerHTML = '<div class="un-empty">No catalogued places ahead \u2014 you\u2019re near the finish line!</div>'; return; }
+        ctx.list.forEach(c=>{
+            const p = c.p, cat = POI_CATS[p.cat] || { color:'#64748b', emoji:'\uD83D\uDCCD', label:'Place' };
+            const dn = TRIP.days[c.dIdx] ? ('Day '+TRIP.days[c.dIdx].n) : '';
+            const dayN = TRIP.days[c.dIdx] ? TRIP.days[c.dIdx].n : '';
+            const fyPoi = ['scenic','park','hike','water'].includes(p.cat) || /coffee|roaster|caf[e\u00E9]/i.test(p.name + ' ' + (p.blurb || ''));
+            const added = isAdded(p.day, p.id);
+            const row = el('<div class="un-poi">'
+                + '<div class="up-ic" style="background:'+cat.color+'22">'+cat.emoji+'</div>'
+                + '<div style="flex:1;min-width:0">'
+                    + '<h5>'+p.name+'</h5>'
+                    + '<div class="up-tags"><span class="un-dist">'+fmtMi(c.dist)+'</span>'
+                        + '<span class="tag" style="background:'+cat.color+'1f;color:'+cat.color+'">'+cat.label+'</span>'
+                        + (dn ? '<span class="poi-leg">'+dn+'</span>' : '')
+                        + '<span class="dwell-chip">\u23F1\uFE0F ~'+fmtMins(POI_DWELL[p.cat] || 30)+'</span>'
+                        + (fyPoi ? '<span class="foryou-pill">\u2605 Your vibe</span>' : '')
+                        + (function(){ const dt = detourNoteFor(p.lat, p.lng, p.day, POI_DWELL[p.cat]||30); return dt ? '<span class="detour-chip" title="~'+fmtMins(dt.drive)+' extra driving; ~'+fmtMins(dt.total)+' with the visit">\u21A9\uFE0F +'+fmtMins(dt.drive)+'</span>' : ''; })()
+                        + (poiParking(p) ? '<span class="park-chip" title="Cheapest parking">\uD83C\uDD7F\uFE0F Parking</span>' : '')
+                    + '</div>'
+                    + '<div class="up-blurb">'+(p.blurb || '')+'</div>'
+                    + '<div class="up-act">'
+                        + '<button class="add-btn'+(added ? ' added' : '')+'" data-un-add="1">'+(added ? ('\u2713 Added to Day '+dayN) : '\uFF0B Add')+'</button>'
+                        + '<a class="mini-link" target="_blank" rel="noopener" href="'+gmaps(p.q || p.name)+'">\uD83D\uDCCD Maps</a>'
+                    + '</div>'
+                + '</div>'
+            + '</div>');
+            row.querySelector('[data-un-add]').addEventListener('click', (e)=>{
+                toggleAdded(p.day, p.id);
+                if(typeof refreshCustomUI === 'function') refreshCustomUI();
+                const b = e.currentTarget, now = isAdded(p.day, p.id);
+                b.classList.toggle('added', now);
+                b.textContent = now ? ('\u2713 Added to Day '+dayN) : '\uFF0B Add';
+            });
+            listEl.appendChild(row);
+        });
+    }
+    function locateUpNext(force){
+        const status = document.getElementById('unStatus');
+        if(UP.pos && !force){ renderUpNext(computeUpNext(UP.pos)); return; }
+        if(!navigator.geolocation){ status.textContent = 'Geolocation isn\u2019t available in this browser.'; return; }
+        status.textContent = 'Locating you\u2026';
+        navigator.geolocation.getCurrentPosition(
+            (p)=>{ UP.pos = { lat:p.coords.latitude, lng:p.coords.longitude }; renderUpNext(computeUpNext(UP.pos)); },
+            (err)=>{
+                const a = routeAnchors()[0];
+                UP.pos = { lat:a.lat, lng:a.lng };
+                renderUpNext(computeUpNext(UP.pos));
+                status.textContent = (err && err.code === 1)
+                    ? 'Location blocked \u2014 showing from the trip start. Allow location & refresh for live results.'
+                    : 'Couldn\u2019t get a fix \u2014 showing from the trip start.';
+            },
+            { enableHighAccuracy:false, timeout:9000, maximumAge:120000 }
+        );
+    }
+    function openUpNext(){
+        const dr = document.getElementById('upnextDrawer');
+        dr.classList.add('open'); dr.setAttribute('aria-hidden', 'false');
+        document.getElementById('upnextScrim').classList.add('show');
+        locateUpNext(false);
+    }
+    function closeUpNext(){
+        const dr = document.getElementById('upnextDrawer');
+        dr.classList.remove('open'); dr.setAttribute('aria-hidden', 'true');
+        document.getElementById('upnextScrim').classList.remove('show');
     }
 
     function boot(){
@@ -2377,6 +3220,11 @@
         dateInput.addEventListener('change', ()=>{
             if(dateInput.value){ setTripStart(dateInput.value); rebuild(); }
         });
+        const nightsInput = document.getElementById('sdNights');
+        if(nightsInput){
+            nightsInput.value = getNights();
+            nightsInput.addEventListener('change', ()=>{ setNights(nightsInput.value); nightsInput.value = getNights(); rebuild(); });
+        }
         setInterval(updateCountdown, 60000);
 
         // header controls
@@ -2392,6 +3240,13 @@
         document.getElementById('navToggle').addEventListener('click', openNavMobile);
         document.getElementById('scrim').addEventListener('click', closeNavMobile);
 
+        // always-on: discover upcoming places
+        document.getElementById('upnextFab').addEventListener('click', openUpNext);
+        document.getElementById('unClose').addEventListener('click', closeUpNext);
+        document.getElementById('upnextScrim').addEventListener('click', closeUpNext);
+        document.getElementById('unRefresh').addEventListener('click', ()=> locateUpNext(true));
+        document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') closeUpNext(); });
+
         // keyboard: arrow keys move between legs
         const order = ['overview', 'discover', 'planning', ...TRIP.days.map(d=>d.id)];
         document.addEventListener('keydown', (e)=>{
@@ -2404,6 +3259,73 @@
 
     if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', boot);
     else boot();
+    </script>
+
+    <script>
+    /* ============================================================
+       UNIFIED DESIGN  ·  feature-flag plumbing + floating toggle
+       (?unified=1 sticky to localStorage; body.unified is the kill switch)
+       ============================================================ */
+    (function () {
+        'use strict';
+        var STORAGE_KEY = 'sd.unified';
+        var REDUCED = (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+
+        function readFlag() {
+            var p = new URLSearchParams(location.search);
+            if (p.has('unified')) {
+                var v = p.get('unified');
+                try { localStorage.setItem(STORAGE_KEY, v === '1' ? '1' : '0'); } catch (_e) {}
+                return v === '1';
+            }
+            try { return localStorage.getItem(STORAGE_KEY) === '1'; } catch (_e) { return false; }
+        }
+        function applyFlag(on) {
+            document.body.classList.toggle('unified', !!on);
+            if (typeof window.__rerenderOnUnifiedToggle === 'function') window.__rerenderOnUnifiedToggle();
+            var btn = document.getElementById('uFlagToggle');
+            if (btn) {
+                btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+                btn.querySelector('.u-flag-label').textContent = on ? 'unified \u00B7 on' : 'unified \u00B7 off';
+            }
+        }
+        function persist(on) { try { localStorage.setItem(STORAGE_KEY, on ? '1' : '0'); } catch (_e) {} }
+        function bindMagnetic(el) {
+            if (REDUCED || el.__uMagnetBound) return;
+            el.__uMagnetBound = true;
+            var tiltMax = parseFloat(el.dataset.magnetTilt || '4');
+            var translateScale = parseFloat(el.dataset.magnetTranslate || '0.18');
+            var strength = parseFloat(el.dataset.magnetStrength || '0.15');
+            var raf = 0, latest = null;
+            function paint() {
+                raf = 0;
+                if (!latest || !document.body.classList.contains('unified')) { el.style.transform = ''; return; }
+                var r = el.getBoundingClientRect();
+                var dx = latest.x - (r.left + r.width / 2), dy = latest.y - (r.top + r.height / 2);
+                el.style.transform = 'perspective(1000px) rotateX(' + ((-dy / r.height) * tiltMax).toFixed(2) + 'deg) rotateY(' + ((dx / r.width) * tiltMax).toFixed(2) + 'deg) translate3d(' + (dx * translateScale * strength * 3.5).toFixed(1) + 'px,' + (dy * translateScale * strength * 3.5).toFixed(1) + 'px,0)';
+            }
+            el.addEventListener('mousemove', function (e) { latest = { x: e.clientX, y: e.clientY }; if (!raf) raf = requestAnimationFrame(paint); });
+            el.addEventListener('mouseleave', function () { latest = null; el.style.transform = ''; });
+        }
+        window.__uBindMagnets = function (root) { (root || document).querySelectorAll('.u-magnet').forEach(bindMagnetic); };
+        function mountToggle() {
+            if (document.getElementById('uFlagToggle')) return;
+            var btn = document.createElement('button');
+            btn.id = 'uFlagToggle';
+            btn.className = 'u-flag-toggle';
+            btn.type = 'button';
+            btn.setAttribute('aria-label', 'Toggle unified design');
+            btn.innerHTML = '<span class="u-flag-dot"></span><span class="u-flag-label">unified \u00B7 off</span>';
+            btn.addEventListener('click', function () {
+                var on = !document.body.classList.contains('unified');
+                applyFlag(on); persist(on);
+            });
+            document.body.appendChild(btn);
+        }
+        mountToggle();
+        applyFlag(readFlag());
+        window.__uBindMagnets(document);
+    })();
     </script>
 </body>
 </html>
