@@ -59,6 +59,15 @@
             --u-glass-shadow: 0 8px 32px rgba(26,19,48,0.08), 0 2px 6px rgba(26,19,48,0.04), inset 0 1px 0 rgba(255,255,255,0.8);
             --u-sans: -apple-system, BlinkMacSystemFont, 'Inter', 'SF Pro Text', 'Segoe UI', sans-serif;
             --u-serif: 'ET Book', 'Charter', 'Iowan Old Style', Georgia, serif;
+
+            /* ---- travel-centric skin (active under body.unified) ---- */
+            --t-route: #b45309;                    /* the single trail thread */
+            --t-route-soft: rgba(180,83,9,0.22);
+            --t-stamp: #be123c;                    /* passport-stamp accent */
+            --t-board-bg: #14213d;                 /* split-flap departure board */
+            --t-board-ink: #fcd34d;                /* amber flap text */
+            --t-paper: #fbf7ef;                    /* ticket paper */
+            --t-contour: rgba(180,83,9,0.10);      /* topo contour ink */
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -708,6 +717,45 @@
         body.unified .un-poi .dwell-chip, body.unified .un-poi .park-chip, body.unified .un-poi .detour-chip { background: transparent; border: none; color: var(--u-faint); padding: 0; font-variant: all-small-caps; letter-spacing: 0.05em; }
         body.unified .un-poi .tag { background: transparent !important; color: var(--u-dim) !important; padding: 0; font-variant: all-small-caps; letter-spacing: 0.05em; }
         body.unified .un-refresh { font-variant: all-small-caps; letter-spacing: 0.06em; }
+
+        /* ============================================================
+           UNIFIED · TRAVEL  ·  the journey-centric reskin of the house style
+           Route thread + boarding-pass tiles + split-flap board + passport
+           stamps + topographic glass wash. Still one glass focus surface.
+           ============================================================ */
+        /* topographic contour wash behind the one glass surface (pure CSS contours) */
+        body.unified .upnext-drawer { position: relative; }
+        body.unified .upnext-drawer::before {
+            content: ''; position: absolute; inset: 0; z-index: 0; pointer-events: none;
+            background:
+                repeating-radial-gradient(circle at 84% 10%, transparent 0 17px, var(--t-contour) 17px 18px),
+                repeating-radial-gradient(circle at 12% 64%, transparent 0 21px, var(--t-contour) 21px 22px),
+                radial-gradient(120% 70% at 12% 0%, rgba(252,217,167,0.40), transparent 56%),
+                radial-gradient(110% 60% at 92% 26%, rgba(199,210,254,0.26), transparent 56%);
+        }
+        body.unified .un-head, body.unified .un-guess, body.unified .un-list, body.unified .un-foot { position: relative; z-index: 1; }
+        body.unified .un-title::before { content: '\2708\FE0F  '; }
+
+        /* guess tiles → boarding-pass stubs with a split-flap departure board for the distance */
+        body.unified .un-guess .ug-row { background: var(--t-paper); border-top: 3px solid var(--t-route); border-radius: 4px 4px 10px 10px; }
+        body.unified .un-guess .ug-row::after { content: ''; position: absolute; right: 9px; top: 10px; bottom: 10px; border-left: 1.5px dashed var(--t-route-soft); }
+        body.unified .un-guess .ug-meta { background: var(--t-board-bg); color: var(--t-board-ink); padding: 2px 8px; border-radius: 5px; font-variant-numeric: tabular-nums; letter-spacing: 0.03em; box-shadow: inset 0 -6px 0 rgba(0,0,0,0.18); }
+
+        /* place list → a dotted route, the place icons are the stops on the line */
+        body.unified .un-list { position: relative; }
+        body.unified .un-list::before { content: ''; position: absolute; top: 22px; bottom: 22px; left: 37px; border-left: 2px dotted var(--t-route-soft); z-index: 0; }
+        body.unified .un-poi { padding: 12px 4px; }
+        body.unified .un-poi .up-ic { position: relative; z-index: 1; border: 2px solid var(--t-route); box-shadow: 0 0 0 4px var(--u-glass-bg); }
+        /* distance → small split-flap board chip */
+        body.unified .un-dist { background: var(--t-board-bg); color: var(--t-board-ink); padding: 2px 7px; border-radius: 4px; font-variant-numeric: tabular-nums; font-weight: 800; box-shadow: inset 0 -5px 0 rgba(0,0,0,0.18); }
+        /* "your vibe" → a tilted passport stamp */
+        body.unified .un-poi .foryou-pill { transform: rotate(-3.5deg); border: 1.5px dashed var(--t-stamp); color: var(--t-stamp); background: transparent; padding: 1px 6px; border-radius: 3px; font-variant: all-small-caps; letter-spacing: 0.08em; font-weight: 800; }
+        body.unified .un-poi .foryou-pill::before { content: none; }
+        /* the human voice → serif journal note for the end-of-route state */
+        body.unified .un-empty { font-family: var(--u-serif); font-style: italic; color: var(--u-dim); }
+        /* refresh → a ticket-stub CTA */
+        body.unified .un-refresh { background: var(--t-route); color: #fff; border: none; border-radius: 8px; }
+        body.unified .un-refresh:hover { background: #9a4708; }
     </style>
 </head>
 <body>
@@ -3286,7 +3334,7 @@
             var btn = document.getElementById('uFlagToggle');
             if (btn) {
                 btn.setAttribute('aria-pressed', on ? 'true' : 'false');
-                btn.querySelector('.u-flag-label').textContent = on ? 'unified \u00B7 on' : 'unified \u00B7 off';
+                btn.querySelector('.u-flag-label').textContent = on ? 'journey mode \u00B7 on' : 'journey mode \u00B7 off';
             }
         }
         function persist(on) { try { localStorage.setItem(STORAGE_KEY, on ? '1' : '0'); } catch (_e) {} }
@@ -3315,7 +3363,7 @@
             btn.className = 'u-flag-toggle';
             btn.type = 'button';
             btn.setAttribute('aria-label', 'Toggle unified design');
-            btn.innerHTML = '<span class="u-flag-dot"></span><span class="u-flag-label">unified \u00B7 off</span>';
+            btn.innerHTML = '<span class="u-flag-dot"></span><span class="u-flag-label">journey mode \u00B7 off</span>';
             btn.addEventListener('click', function () {
                 var on = !document.body.classList.contains('unified');
                 applyFlag(on); persist(on);
