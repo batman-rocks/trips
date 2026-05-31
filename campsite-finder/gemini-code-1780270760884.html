@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Campground Ranker</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; max-width: 950px; margin: 40px auto; padding: 0 20px; background: #f4f6f8; color: #333; }
+        .dashboard { background: #fff; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        .controls { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px; }
+        input, select, button { padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 15px; width: 100%; box-sizing: border-box; }
+        button { background: #2c3e50; color: white; border: none; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        button:hover { background: #1a252f; }
+        label { display: block; font-size: 13px; font-weight: bold; margin-bottom: 5px; color: #555; }
+        .toggle-row { display: flex; align-items: center; gap: 10px; margin-top: 15px; background: #e8f4f8; padding: 12px; border-radius: 6px; }
+        .toggle-row input { width: auto; transform: scale(1.2); }
+        .camp-node { background: #fff; border: 1px solid #eaeaea; border-radius: 8px; padding: 15px; margin-top: 15px; border-left: 5px solid #2c3e50; }
+        .camp-header { display: flex; justify-content: space-between; font-weight: bold; font-size: 18px; margin-bottom: 12px; }
+        .site-card { background: #fdfdfd; border: 1px solid #eee; padding: 12px; border-radius: 6px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+        .score-badge { background: #ffd700; color: #8b6508; font-weight: bold; padding: 4px 8px; border-radius: 4px; font-size: 13px; }
+        .avail-dates { font-size: 13px; color: #27ae60; font-weight: 600; }
+        .log { font-size: 14px; color: #666; margin-top: 10px; }
+    </style>
+</head>
+<body>
+
+    <h2>🏕️ Smart Campground Ranker</h2>
+    <p>Finds nearby campgrounds, filters for your required days, and sorts available sites by desirability and driveway clearance (ideal if you are bringing an F-150 Tremor or a larger rig).</p>
+
+    <div class="dashboard">
+        <div class="controls">
+            <div>
+                <label>RIDB API Key</label>
+                <input type="password" id="apiKey" placeholder="Your ridb.recreation.gov key">
+            </div>
+            <div>
+                <label>Search Radius</label>
+                <select id="radius">
+                    <option value="25">25 Miles</option>
+                    <option value="50" selected>50 Miles</option>
+                    <option value="100">100 Miles</option>
+                </select>
+            </div>
+            <div>
+                <label>Target Month</label>
+                <input type="month" id="targetMonth" value="2026-07">
+            </div>
+            <div>
+                <label>&nbsp;</label>
+                <button onclick="startSearch()">Scan & Rank</button>
+            </div>
+        </div>
+
+        <div class="toggle-row">
+            <input type="checkbox" id="weekendOnly" checked>
+            <label for="weekendOnly" style="margin:0; font-size: 15px;"><strong>Weekend Mode:</strong> Only show sites available on a Friday or Saturday night.</label>
+        </div>
+        
+        <div id="statusUpdate" class="log">Waiting to start...</div>
+    </div>
+
+    <div id="displayArea"></div>
+
+    <script>
+        const proxy = "https://cors-anywhere.herokuapp.com/";
+
+        function startSearch() {
+            const apiKey = document.getElementById('apiKey').value.trim();
+            if(!apiKey) return alert("API Key is required to find your coordinates.");
+
+            document.getElementById('displayArea').innerHTML = '';
+            document.getElementById('statusUpdate').innerText = "Locating you...";
+
+            navigator.geolocation.getCurrentPosition(
+                (pos) => { fetchCampgrounds(pos.coords.latitude, pos.coords.longitude, apiKey); },
+                (err) => { document.getElementById('statusUpdate').innerText = `GPS Error: ${err.message}`; }
+            );
+        }
+
+        async function fetchCampgrounds(lat, lon, apiKey) {
+            const radius = document.getElementById('radius').value;
+            document.getElementById('statusUpdate').innerText = `Searching within ${radius} miles...`;
+            
+            const url = `https://ridb.recreation.gov/api/v1/facilities?latitude=${lat}&longitude=${lon}&radius=${radius}&activity=CAMPING&limit=10`;
+            
+            try {
+                const res = await fetch(url, { headers: { 'apikey': apiKey, 'Accept': 'application/json' } });
+                const json = await res.json();
+                
+                if(!json.RECDATA || json.RECDATA.length === 0) {
+                    document.getElementById('statusUpdate').innerText = "No campgrounds found.";
+                    return;
+                }
+                
+                scanAvailability(json.RECDATA);
+            } catch(e) {
+                document.getElementById('statusUpdate').innerText = `API Error: ${e.message}`;
+            }
+        }
+
+        async function scanAvailability(facilities) {
+            const month = document.getElementById('targetMonth').value;
+            const isWeekendOnly = document.getElementById('weekendOnly').checked;
+            const displayArea = document.getElementById('displayArea');
+            document.getElementById('statusUpdate').innerText = "Ranking live inventory...";
+
+            for(let fac of facilities) {
+                const liveUrl = `${proxy}https://www.recreation.gov/api/camping/campgrounds/${fac.FacilityID}/month?start_date=${month}-01T00%3A00%3A00.000Z`;
+                
+                try {
+                    const response = await fetch(liveUrl, { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
+                    if(response.ok) {
+                        const data = await response.json();
+                        processAndRankSites(fac.FacilityName, data.campsites, isWeekendOnly, displayArea);
+                    }
+                } catch(err) {
+                    console.log(`Skipped ${fac.FacilityName} due to CORS/Fetch error.`);
+                }
+            }
+            document.getElementById('statusUpdate').innerText = "Scan complete!";
+        }
+
+        function processAndRankSites(campName, campsites, weekendOnly, container) {
+            if(!campsites) return;
+
+            let rankedSites = [];
+
+            // 1. Iterate through every site in the campground
+            for(let key in campsites) {
+                const site = campsites[key];
+                let validDates = [];
+
+                // 2. Filter dates based on availability and weekend logic
+                for(let dateStr in site.availabilities) {
+                    if(site.availabilities[dateStr] === 'Available') {
+                        const dateObj = new Date(dateStr + "T00:00:00");
+                        const dayOfWeek = dateObj.getDay(); 
+                        
+                        // 5 = Friday, 6 = Saturday
+                        if(weekendOnly && dayOfWeek !== 5 && dayOfWeek !== 6) {
+                            continue; // Skip weekdays if filter is on
+                        }
+                        validDates.push(dateStr.substring(5, 10)); // Save MM-DD
+                    }
+                }
+
+                // 3. If the site has dates that passed the filter, calculate its Desirability Score
+                if(validDates.length > 0) {
+                    let score = 0;
+
+                    // Example Algorithmic Scoring Rules:
+                    
+                    // Rule A: Premium loops usually have better views/spacing
+                    if(site.loop && site.loop.toLowerCase().includes("premium")) score += 20;
+                    
+                    // Rule B: RV/Truck compatibility (Valuable for larger rigs)
+                    if(site.campsite_type === "RV NON-ELECTRIC" || site.campsite_type === "STANDARD ELECTRIC") score += 15;
+                    
+                    // Rule C: Bonus points for having multiple days open (easier to book a full weekend)
+                    score += (validDates.length * 2);
+
+                    rankedSites.push({
+                        siteNumber: site.site,
+                        loop: site.loop || "Main",
+                        type: site.campsite_type,
+                        dates: validDates,
+                        score: score
+                    });
+                }
+            }
+
+            // 4. Sort the array from highest score to lowest
+            rankedSites.sort((a, b) => b.score - a.score);
+
+            // 5. Render the results to the UI
+            if(rankedSites.length > 0) {
+                const campNode = document.createElement('div');
+                campNode.className = 'camp-node';
+                let html = `<div class="camp-header">🌲 ${campName}</div>`;
+                
+                // Show top 10 best-ranked sites
+                rankedSites.slice(0, 10).forEach(s => {
+                    html += `
+                        <div class="site-card">
+                            <div>
+                                <strong>Site ${s.siteNumber}</strong> (${s.loop}) <br>
+                                <small style="color:#777;">${s.type}</small>
+                            </div>
+                            <div style="text-align: right;">
+                                <div class="score-badge">⭐ Score: ${s.score}</div>
+                                <div class="avail-dates">${s.dates.join(', ')}</div>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                campNode.innerHTML = html;
+                container.appendChild(campNode);
+            }
+        }
+    </script>
+</body>
+</html>
