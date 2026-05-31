@@ -81,8 +81,7 @@
             const radius = document.getElementById('radius').value;
             document.getElementById('statusUpdate').innerText = `Searching within ${radius} miles...`;
             
-            const url = `https://ridb.recreation.gov/api/v1/facilities?latitude=${lat}&longitude=${lon}&radius=${radius}&activity=CAMPING&limit=10`;
-            
+            const url = `${proxy}https://ridb.recreation.gov/api/v1/facilities?latitude=${lat}&longitude=${lon}&radius=${radius}&activity=CAMPING&limit=10`;
             try {
                 const res = await fetch(url, { headers: { 'apikey': apiKey, 'Accept': 'application/json' } });
                 const json = await res.json();
