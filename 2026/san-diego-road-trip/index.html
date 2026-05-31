@@ -2,10 +2,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mountain to Coast Expedition - Modern Command Suite</title>
+    <title>Mountain to Coast Expedition - Command Suite</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <!-- Leaflet CSS for Maps -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
     <style>
         :root {
             --bg: #f4f4f5;
@@ -44,25 +46,10 @@
             z-index: 10;
         }
 
-        .top-banner h1 {
-            margin: 0;
-            font-size: 1.5rem;
-            font-weight: 800;
-            letter-spacing: -0.03em;
-            color: var(--accent);
-        }
+        .top-banner h1 { margin: 0; font-size: 1.5rem; font-weight: 800; letter-spacing: -0.03em; color: var(--accent); }
+        .top-banner p { margin: 4px 0 0 0; font-size: 0.95rem; color: var(--text-muted); }
 
-        .top-banner p {
-            margin: 4px 0 0 0;
-            font-size: 0.95rem;
-            color: var(--text-muted);
-        }
-
-        .workspace {
-            display: flex;
-            flex: 1;
-            overflow: hidden;
-        }
+        .workspace { display: flex; flex: 1; overflow: hidden; }
 
         .left-nav {
             width: 340px;
@@ -93,18 +80,8 @@
             border-radius: 12px;
         }
 
-        .nav-item:hover {
-            background-color: #f0f0f1;
-        }
-
-        .nav-item.active {
-            background-color: var(--surface);
-            border-left-color: var(--highlight);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
-            border: 1px solid var(--border);
-            border-left: 4px solid var(--highlight);
-        }
-
+        .nav-item:hover { background-color: #f0f0f1; }
+        .nav-item.active { background-color: var(--surface); border-left-color: var(--highlight); box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid var(--border); border-left: 4px solid var(--highlight); }
         .nav-item h3 { margin: 0; font-size: 1rem; font-weight: 600; color: var(--accent); }
         .nav-item p { margin: 4px 0 0 0; font-size: 0.85rem; color: var(--text-muted); }
 
@@ -120,101 +97,61 @@
         .day-container { display: none; flex-direction: column; height: 100%; max-width: 900px; margin: 0 auto; width: 100%; }
         .day-container.active { display: block; }
 
-        .day-header-title {
-            font-size: 2.5rem;
-            font-weight: 800;
-            letter-spacing: -0.05em;
-            margin-bottom: 20px;
-            color: var(--accent);
-        }
+        .day-header-title { font-size: 2.5rem; font-weight: 800; letter-spacing: -0.05em; margin-bottom: 20px; color: var(--accent); }
 
-        .weather-container {
-            margin-bottom: 30px;
+        .interactive-map-widget {
+            width: 100%;
+            height: 280px;
             border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+            margin-bottom: 24px;
             border: 1px solid var(--border);
-            background: var(--surface);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            position: relative;
+            z-index: 1;
         }
 
-        .tab-bar {
-            display: flex;
-            gap: 12px;
-            margin-bottom: 30px;
-            flex-wrap: wrap;
-        }
-
-        .tab-button {
-            padding: 10px 20px;
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 30px;
-            font-size: 0.875rem;
-            font-weight: 600;
-            color: var(--text-muted);
-            cursor: pointer;
-            transition: all 0.2s ease;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
-        }
-
-        .tab-button:hover {
-            background: #f4f4f5;
-            color: var(--accent);
-        }
-
-        .tab-button.active {
+        .map-overlay-btn {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
             background: var(--accent);
-            color: #ffffff;
-            border-color: var(--accent);
-            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.2);
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 600;
+            z-index: 1000;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            transition: all 0.2s;
         }
+
+        .map-overlay-btn:hover {
+            background: var(--highlight);
+            transform: translateY(-2px);
+        }
+
+        .weather-container { margin-bottom: 30px; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.03); border: 1px solid var(--border); background: var(--surface); }
+
+        .tab-bar { display: flex; gap: 12px; margin-bottom: 30px; flex-wrap: wrap; }
+        .tab-button { padding: 10px 20px; background: var(--surface); border: 1px solid var(--border); border-radius: 30px; font-size: 0.875rem; font-weight: 600; color: var(--text-muted); cursor: pointer; transition: all 0.2s ease; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
+        .tab-button:hover { background: #f4f4f5; color: var(--accent); }
+        .tab-button.active { background: var(--accent); color: #ffffff; border-color: var(--accent); box-shadow: 0 4px 12px rgba(15, 23, 42, 0.2); }
 
         .tab-pane { display: none; animation: fadeIn 0.3s ease; }
         .tab-pane.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(5px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        .card { background: var(--surface); border-radius: var(--radius); padding: 30px; margin-bottom: 24px; box-shadow: 0 10px 30px -10px rgba(0,0,0,0.05); border: 1px solid rgba(0,0,0,0.02); }
 
-        .card {
-            background: var(--surface);
-            border-radius: var(--radius);
-            padding: 30px;
-            margin-bottom: 24px;
-            box-shadow: 0 10px 30px -10px rgba(0,0,0,0.05);
-            border: 1px solid rgba(0,0,0,0.02);
-        }
-
-        .timeline-item {
-            display: flex;
-            margin-bottom: 24px;
-            align-items: flex-start;
-        }
+        .timeline-item { display: flex; margin-bottom: 24px; align-items: flex-start; }
         .timeline-item:last-child { margin-bottom: 0; }
-
-        .time {
-            font-weight: 800;
-            font-size: 0.875rem;
-            color: var(--highlight);
-            width: 100px;
-            flex-shrink: 0;
-            padding-top: 4px;
-        }
-
+        .time { font-weight: 800; font-size: 0.875rem; color: var(--highlight); width: 100px; flex-shrink: 0; padding-top: 4px; }
         .event { flex-grow: 1; }
         .event h4 { font-size: 1.125rem; font-weight: 600; margin-bottom: 6px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
         .event p { color: var(--text-muted); font-size: 0.95rem; }
 
-        .tag {
-            font-size: 0.7rem;
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-
+        .tag { font-size: 0.7rem; padding: 4px 10px; border-radius: 20px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; }
         .tag.coffee { background: #fef3c7; color: #b45309; }
         .tag.photo { background: #e0f2fe; color: #0369a1; }
         .tag.food { background: #ffe4e6; color: #be123c; }
@@ -223,42 +160,14 @@
         .tag.decided { background: #18181b; color: #ffffff; }
         .tag.consider { background: #f97316; color: #ffffff; }
 
-        .img-card {
-            padding: 0;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-        }
-
+        .img-card { padding: 0; overflow: hidden; display: flex; flex-direction: column; }
         .img-frame { height: 240px; width: 100%; }
         .img-frame img { width: 100%; height: 100%; object-fit: cover; }
         .img-content { padding: 30px; }
         .img-content h3 { font-size: 1.25rem; font-weight: 600; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
         .img-content p { color: var(--text-muted); font-size: 0.95rem; }
 
-        .btn {
-            display: inline-block;
-            background: var(--surface);
-            color: var(--accent);
-            border: 1px solid var(--border);
-            text-decoration: none;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-weight: 600;
-            font-size: 0.85rem;
-            transition: all 0.2s;
-        }
-        .btn:hover { background: #f4f4f5; }
-
-        .safety-banner {
-            background-color: #fff1f2;
-            border-left: 4px solid #e11d48;
-            padding: 16px 20px;
-            border-radius: 8px;
-            margin-bottom: 24px;
-            font-size: 0.95rem;
-            color: #881337;
-        }
+        .safety-banner { background-color: #fff1f2; border-left: 4px solid #e11d48; padding: 16px 20px; border-radius: 8px; margin-bottom: 24px; font-size: 0.95rem; color: #881337; }
     </style>
 </head>
 <body>
@@ -275,79 +184,59 @@
     </div>
 
     <div class="workspace">
-        <!-- LEFT NAV -->
         <div class="left-nav">
             <div class="nav-section-title">Expedition Legs</div>
-            
             <div class="nav-item active" onclick="switchDay(1, this)">
                 <h3>Day 1: The Alpine Descent</h3>
-                <p>June 24 • Colorado Springs to Moab</p>
+                <p>Colorado Springs to Moab</p>
             </div>
             <div class="nav-item" onclick="switchDay(2, this)">
                 <h3>Day 2: Desert Reefs & Lava</h3>
-                <p>June 25 • Moab to St. George</p>
+                <p>Moab to St. George</p>
             </div>
             <div class="nav-item" onclick="switchDay(3, this)">
                 <h3>Day 3: Limestone Narrows</h3>
-                <p>June 26 • St. George to Las Vegas</p>
+                <p>St. George to Las Vegas</p>
             </div>
             <div class="nav-item" onclick="switchDay(4, this)">
                 <h3>Day 4: Pacific Descent</h3>
-                <p>June 27 • Las Vegas to La Jolla</p>
+                <p>Las Vegas to La Jolla</p>
             </div>
         </div>
 
-        <!-- CONTENT PANEL -->
         <div class="content-panel">
             
             <!-- DAY 1 -->
             <div id="day1-container" class="day-container active">
                 <h2 class="day-header-title">Colorado Springs to Moab</h2>
                 
-                <div class="weather-container">
-                    <a class="weatherwidget-io" href="https://forecast7.com/en/38d57n109d55/moab/" data-label_1="MOAB, UT" data-label_2="FORECAST" data-theme="pure" data-basecolor="#ffffff" data-textcolor="#18181b">MOAB, UT FORECAST</a>
+                <div class="interactive-map-widget" id="map-day1">
+                    <a href="https://www.google.com/maps/dir/Colorado+Springs,+CO/Cisco,+UT/Moab,+UT/" target="_blank" class="map-overlay-btn">Open in Google Maps</a>
                 </div>
+
+                <div class="weather-container"><a class="weatherwidget-io" href="https://forecast7.com/en/38d57n109d55/moab/" data-label_1="MOAB, UT" data-label_2="FORECAST" data-theme="pure" data-basecolor="#ffffff" data-textcolor="#18181b">MOAB, UT FORECAST</a></div>
 
                 <div class="tab-bar">
-                    <button class="tab-button active" onclick="switchTab(this, 'd1-timeline')">🧭 Timeline & Navigation</button>
+                    <button class="tab-button active" onclick="switchTab(this, 'd1-timeline')">🧭 Timeline</button>
                     <button class="tab-button" onclick="switchTab(this, 'd1-culinary')">☕ Fuel & Dining</button>
                     <button class="tab-button" onclick="switchTab(this, 'd1-photo')">📷 Photo Detours</button>
-                    <button class="tab-button" onclick="switchTab(this, 'd1-lodging')">🛏️ Lodging Command</button>
+                    <button class="tab-button" onclick="switchTab(this, 'd1-lodging')">🛏️ Lodging Options</button>
                 </div>
 
-                <!-- D1 Tabs -->
                 <div id="d1-timeline" class="tab-pane active">
-                    <div class="safety-banner">
-                        <strong>Safety Protocol:</strong> High-altitude thermal shifts across Vail Pass (10,662 ft). Expect intense mountain sun radiation followed by rapid cooling. Descent vectors into Moab drop into a high-exposure desert basin.
-                    </div>
+                    <div class="safety-banner"><strong>Safety Protocol:</strong> High-altitude thermal shifts across Vail Pass. The descent into Moab enters a high-exposure desert basin.</div>
                     <div class="card">
                         <div class="timeline-item">
                             <div class="time">08:00 AM</div>
-                            <div class="event">
-                                <h4>Wheels Up <a href="#" class="btn" style="margin-left: auto;">📍 Live Map</a></h4>
-                                <p>Depart early via US-24 W past Ute Pass to clear front-range logistics. Trace spectacular mountain paths toward I-70 W.</p>
-                            </div>
+                            <div class="event"><h4>Wheels Up</h4><p>Depart early via US-24 W past Ute Pass. Trace spectacular mountain paths toward I-70 W.</p></div>
                         </div>
                         <div class="timeline-item">
                             <div class="time">12:30 PM</div>
-                            <div class="event">
-                                <h4>Maverik Adventure's First Stop <span class="tag fuel">Iconic Fuel Stop</span></h4>
-                                <p>Grand Junction, CO. The perfect strategic top-off point before diving into the remote Utah desert stretches. Clean facilities, robust snack selections, and essential before hitting the isolated UT-128.</p>
-                            </div>
-                        </div>
-                        <div class="timeline-item">
-                            <div class="time">02:30 PM</div>
-                            <div class="event">
-                                <h4>UT-128 Colorado River Entry</h4>
-                                <p>Slip off the interstate early at Cisco to cruise the sandstone gorge canyon floor byway directly into Moab.</p>
-                            </div>
+                            <div class="event"><h4>Maverik Adventure's Stop <span class="tag fuel">Fuel Stop</span></h4><p>Grand Junction, CO. Fill the 36-gallon tank and stock up before hitting the remote UT-128 stretch.</p></div>
                         </div>
                         <div class="timeline-item">
                             <div class="time">03:30 PM</div>
-                            <div class="event">
-                                <h4>Target Arrival: Moab Base</h4>
-                                <p>Safe mid-afternoon arrival. Unpack the gear, stretch your legs, and get comfortable with the local area well before nightfall to prevent driving fatigue.</p>
-                            </div>
+                            <div class="event"><h4>Target Arrival: Moab Base</h4><p>Arrive, unpack, and get comfortable with the local area well before nightfall.</p></div>
                         </div>
                     </div>
                 </div>
@@ -357,7 +246,7 @@
                         <div class="img-frame"><img src="https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=800&q=80" alt="Dinner"></div>
                         <div class="img-content">
                             <h3>Desert Bistro <span class="tag food">5:15 PM Dinner</span></h3>
-                            <p>Housed inside a historic 19th-century pioneer stone fortress. Premium Southwestern game cuisine (wild boar tenderloin, gorgonzola-crusted beef loin). The 5:15 PM opening reservation ensures an effortless, leisurely dinner, matching your 7:30 PM wind-down target perfectly.</p>
+                            <p>Premium Southwestern game cuisine. The 5:15 PM opening reservation ensures an effortless dinner, protecting your 8:00 PM wind-down target.</p>
                         </div>
                     </div>
                 </div>
@@ -367,7 +256,7 @@
                         <div class="img-frame"><img src="https://images.unsplash.com/photo-1606859340211-14372ac6025d?auto=format&fit=crop&w=800&q=80" alt="Arches"></div>
                         <div class="img-content">
                             <h3>Arches Sunset Loop <span class="tag photo">4:15 PM Escape</span></h3>
-                            <p>Arches' summer Timed Entry restriction drops off at 4:00 PM. Clear the gate at 4:15 PM for restriction-free access. Drive to the Park Avenue pullouts: the 5:00 PM low-angled sun turns the giant red-sandstone monoliths a brilliant orange-gold—the ultimate framing opportunity before dinner.</p>
+                            <p>Clear the gate at 4:15 PM when Timed Entry drops. The 5:00 PM sun turns the giant red-sandstone monoliths a brilliant orange-gold—the ultimate framing opportunity before dinner.</p>
                         </div>
                     </div>
                 </div>
@@ -377,7 +266,7 @@
                         <div class="img-frame"><img src="https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=80" alt="Hoodoo"></div>
                         <div class="img-content">
                             <h3>Hoodoo Moab, Curio Collection <span class="tag consider">Option to Consider</span></h3>
-                            <p>Premium luxury resort architecture adjacent to the city core. Features deep, exceptionally well-lit, and heavily monitored private parking lanes perfect for securing your rig overnight.</p>
+                            <p>Premium luxury resort architecture adjacent to the city core with heavily monitored private parking lanes.</p>
                         </div>
                     </div>
                 </div>
@@ -387,49 +276,33 @@
             <div id="day2-container" class="day-container">
                 <h2 class="day-header-title">Moab to St. George</h2>
                 
-                <div class="weather-container">
-                    <a class="weatherwidget-io" href="https://forecast7.com/en/37d09n113d57/st-george/" data-label_1="ST. GEORGE, UT" data-label_2="FORECAST" data-theme="pure" data-basecolor="#ffffff" data-textcolor="#18181b">ST. GEORGE, UT FORECAST</a>
+                <div class="interactive-map-widget" id="map-day2">
+                    <a href="https://www.google.com/maps/dir/Moab,+UT/Snow+Canyon+State+Park,+Utah/St.+George,+UT/" target="_blank" class="map-overlay-btn">Open in Google Maps</a>
                 </div>
 
+                <div class="weather-container"><a class="weatherwidget-io" href="https://forecast7.com/en/37d09n113d57/st-george/" data-label_1="ST. GEORGE, UT" data-label_2="FORECAST" data-theme="pure" data-basecolor="#ffffff" data-textcolor="#18181b">ST. GEORGE, UT FORECAST</a></div>
+
                 <div class="tab-bar">
-                    <button class="tab-button active" onclick="switchTab(this, 'd2-timeline')">🧭 Timeline & Navigation</button>
+                    <button class="tab-button active" onclick="switchTab(this, 'd2-timeline')">🧭 Timeline</button>
                     <button class="tab-button" onclick="switchTab(this, 'd2-culinary')">☕ Fuel & Dining</button>
                     <button class="tab-button" onclick="switchTab(this, 'd2-photo')">📷 Photo Detours</button>
-                    <button class="tab-button" onclick="switchTab(this, 'd2-lodging')">🛏️ Lodging Command</button>
+                    <button class="tab-button" onclick="switchTab(this, 'd2-lodging')">🛏️ Lodging Options</button>
                 </div>
 
                 <div id="d2-timeline" class="tab-pane active">
-                    <div class="safety-banner">
-                        <strong>Safety Protocol:</strong> Traversing extreme high-desert terrain via I-70 West. San Rafael Swell temps frequently cross 100°F. The 3:30 PM arrival target protects you completely from late-afternoon solar exposure.
-                    </div>
+                    <div class="safety-banner"><strong>Safety Protocol:</strong> San Rafael Swell temps frequently cross 100°F. The 3:30 PM arrival target protects you completely from late-afternoon solar exposure.</div>
                     <div class="card">
                         <div class="timeline-item">
                             <div class="time">08:30 AM</div>
-                            <div class="event">
-                                <h4>Wheels Up <a href="#" class="btn" style="margin-left: auto;">📍 Live Map</a></h4>
-                                <p>Clear Moab after craft coffee, joining I-70 West to cross the giant geological folds of the remote desert reef cuts.</p>
-                            </div>
+                            <div class="event"><h4>Wheels Up</h4><p>Clear Moab after craft coffee, joining I-70 West to cross the giant geological folds of the remote desert reef cuts.</p></div>
                         </div>
                         <div class="timeline-item">
                             <div class="time">11:15 AM</div>
-                            <div class="event">
-                                <h4>Salina Junction Fill-Up <span class="tag fuel">Iconic Fuel Stop</span></h4>
-                                <p>Salina, UT. Positioned perfectly at the end of the massive San Rafael Swell stretch before dropping onto I-15. Essential fuel safety buffer before pushing south towards St. George.</p>
-                            </div>
-                        </div>
-                        <div class="timeline-item">
-                            <div class="time">02:45 PM</div>
-                            <div class="event">
-                                <h4>Snow Canyon State Park</h4>
-                                <p>A brief scenic detour just before check-in. Stunning geology and paved loops.</p>
-                            </div>
+                            <div class="event"><h4>Salina Junction <span class="tag fuel">Fuel Stop</span></h4><p>Salina, UT. Essential fuel safety buffer before pushing south toward St. George.</p></div>
                         </div>
                         <div class="timeline-item">
                             <div class="time">03:30 PM</div>
-                            <div class="event">
-                                <h4>Target Arrival: St. George</h4>
-                                <p>Pull up to your lodging, settle in, and grab an early 5:30 PM dinner in town, well ahead of sunset.</p>
-                            </div>
+                            <div class="event"><h4>Target Arrival: St. George</h4><p>Pull up to your lodging, settle in, and prepare for an early 5:30 PM dinner in town.</p></div>
                         </div>
                     </div>
                 </div>
@@ -439,7 +312,7 @@
                         <div class="img-frame"><img src="https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=800&q=80" alt="Espresso"></div>
                         <div class="img-content">
                             <h3>Love Muffin Cafe <span class="tag coffee">08:00 AM Coffee Stop</span></h3>
-                            <p>A top-tier local staple focused on serious specialty espresso extraction. Grab a flawlessly pulled double shot and scratch-baked organic muffins before hitting the highway.</p>
+                            <p>A top-tier local staple for serious specialty espresso extraction. Grab a flawlessly pulled double shot and scratch-baked organic muffins.</p>
                         </div>
                     </div>
                 </div>
@@ -449,7 +322,7 @@
                         <div class="img-frame"><img src="https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=800&q=80" alt="Snow Canyon"></div>
                         <div class="img-content">
                             <h3>Snow Canyon <span class="tag photo">2:45 PM Detour</span></h3>
-                            <p>The mid-afternoon sun hits the dark black lava rock caps layered over massive red Navajo sandstone bluffs. Use the wide gravel pullouts to park. Plug your kettle into the truck's 400W bed outlet and press an AeroPress XL brew while setting up the landscape shots.</p>
+                            <p>Park the Tremor in the wide gravel pullouts against the Navajo sandstone. Plug an electric kettle into the 400W bed outlet to press an AeroPress brew while composing the landscape shots.</p>
                         </div>
                     </div>
                 </div>
@@ -459,7 +332,7 @@
                         <div class="img-frame"><img src="https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=800&q=80" alt="Casitas"></div>
                         <div class="img-content">
                             <h3>The Inn at Entrada <span class="tag consider">Option to Consider</span></h3>
-                            <p>An ultra-premium luxury desert resort community built right up against the sandstone ridges of Snow Canyon. Provides individual, hyper-secure attached closed carports for each casita.</p>
+                            <p>An ultra-premium luxury desert resort built up against the sandstone ridges of Snow Canyon. Provides individual, hyper-secure attached closed carports.</p>
                         </div>
                     </div>
                 </div>
@@ -469,49 +342,33 @@
             <div id="day3-container" class="day-container">
                 <h2 class="day-header-title">St. George to Las Vegas</h2>
                 
-                <div class="weather-container">
-                    <a class="weatherwidget-io" href="https://forecast7.com/en/36d17n115d14/las-vegas/" data-label_1="LAS VEGAS, NV" data-label_2="FORECAST" data-theme="pure" data-basecolor="#ffffff" data-textcolor="#18181b">LAS VEGAS, NV FORECAST</a>
+                <div class="interactive-map-widget" id="map-day3">
+                    <a href="https://www.google.com/maps/dir/St.+George,+UT/Valley+of+Fire+State+Park,+NV/Las+Vegas,+NV/" target="_blank" class="map-overlay-btn">Open in Google Maps</a>
                 </div>
 
+                <div class="weather-container"><a class="weatherwidget-io" href="https://forecast7.com/en/36d17n115d14/las-vegas/" data-label_1="LAS VEGAS, NV" data-label_2="FORECAST" data-theme="pure" data-basecolor="#ffffff" data-textcolor="#18181b">LAS VEGAS, NV FORECAST</a></div>
+
                 <div class="tab-bar">
-                    <button class="tab-button active" onclick="switchTab(this, 'd3-timeline')">🧭 Timeline & Navigation</button>
+                    <button class="tab-button active" onclick="switchTab(this, 'd3-timeline')">🧭 Timeline</button>
                     <button class="tab-button" onclick="switchTab(this, 'd3-culinary')">☕ Fuel & Dining</button>
                     <button class="tab-button" onclick="switchTab(this, 'd3-photo')">📷 Photo Detours</button>
-                    <button class="tab-button" onclick="switchTab(this, 'd3-lodging')">🛏️ Lodging Command</button>
+                    <button class="tab-button" onclick="switchTab(this, 'd3-lodging')">🛏️ Lodging Options</button>
                 </div>
 
                 <div id="d3-timeline" class="tab-pane active">
-                    <div class="safety-banner">
-                        <strong>Safety Protocol:</strong> The Mojave Desert crossing into Clark County reaches blistering heat matrixes. Avoid midday exposed breakdowns by utilizing this short, 2-hour cruising blueprint, stepping directly into climate-controlled hotel infrastructure by 1:30 PM.
-                    </div>
+                    <div class="safety-banner"><strong>Safety Protocol:</strong> Avoid midday exposed breakdowns by utilizing this short cruising blueprint, stepping directly into climate-controlled hotel infrastructure by 1:30 PM.</div>
                     <div class="card">
                         <div class="timeline-item">
                             <div class="time">10:00 AM</div>
-                            <div class="event">
-                                <h4>Wheels Up <a href="#" class="btn" style="margin-left: auto;">📍 Live Map</a></h4>
-                                <p>Enter the tight limestone canyon walls of the Virgin River Gorge on I-15 South.</p>
-                            </div>
+                            <div class="event"><h4>Wheels Up</h4><p>Enter the tight limestone canyon walls of the Virgin River Gorge on I-15 South.</p></div>
                         </div>
                         <div class="timeline-item">
                             <div class="time">11:45 AM</div>
-                            <div class="event">
-                                <h4>Moapa Paiute Travel Plaza <span class="tag fuel">Iconic Fuel Stop</span></h4>
-                                <p>Located precisely at the exit for the Valley of Fire. This is a massive, iconic Nevada travel center—great place to refuel, grab serious road trip snacks, and prep the vehicle right before the scenic loop detour.</p>
-                            </div>
-                        </div>
-                        <div class="timeline-item">
-                            <div class="time">12:15 PM</div>
-                            <div class="event">
-                                <h4>Valley of Fire Transit Loop</h4>
-                                <p>Turn off the interstate to explore the heart of Nevada’s oldest state parkway.</p>
-                            </div>
+                            <div class="event"><h4>Moapa Paiute Travel Plaza <span class="tag fuel">Fuel Stop</span></h4><p>Massive iconic Nevada outpost. Great snacks and a perfect prep before hitting the intense Aztec sandstone loop.</p></div>
                         </div>
                         <div class="timeline-item">
                             <div class="time">01:30 PM</div>
-                            <div class="event">
-                                <h4>Target Arrival: Las Vegas</h4>
-                                <p>Pull into your resort base early. Out-pace the standard 4:00 PM check-in lines and escape the peak solar radiation window. 5:30 PM luxury dining on the Strip.</p>
-                            </div>
+                            <div class="event"><h4>Target Arrival: Las Vegas</h4><p>Pull into your resort base early. Out-pace the standard 4:00 PM check-in lines and escape the peak solar radiation window.</p></div>
                         </div>
                     </div>
                 </div>
@@ -521,7 +378,7 @@
                         <div class="img-frame"><img src="https://images.unsplash.com/photo-1555507036-ab1f4038808a?auto=format&fit=crop&w=800&q=80" alt="Croissants"></div>
                         <div class="img-content">
                             <h3>Bonrue Bakery <span class="tag coffee">09:00 AM Coffee Stop</span></h3>
-                            <p>An elite artisan European pastry program launched by master bakers with background roots inside Thomas Keller’s legendary Bouchon Bakery network. Grab their world-class laminated traditional croissants and espresso before the state line.</p>
+                            <p>An elite artisan European pastry program. Grab their world-class laminated traditional croissants and espresso before hitting the state line.</p>
                         </div>
                     </div>
                 </div>
@@ -531,7 +388,7 @@
                         <div class="img-frame"><img src="https://images.unsplash.com/photo-1629814693356-993f41ff519b?auto=format&fit=crop&w=800&q=80" alt="Valley of Fire"></div>
                         <div class="img-content">
                             <h3>Valley of Fire Loop <span class="tag photo">12:15 PM Detour</span></h3>
-                            <p>The midday desert sun forces blinding color saturation across the Aztec sandstone cliffs. Pull into the elevated rocky overlook cutout along Mouse’s Tank Road; the dramatic winding asphalt ribbon below provides an unbeatable canvas for high-contrast vehicle portraits.</p>
+                            <p>Pull into the elevated rocky overlook cutout along Mouse’s Tank Road; the dramatic winding asphalt ribbon below provides an unbeatable canvas for high-contrast vehicle portraits.</p>
                         </div>
                     </div>
                 </div>
@@ -541,7 +398,7 @@
                         <div class="img-frame"><img src="https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?auto=format&fit=crop&w=800&q=80" alt="Wynn"></div>
                         <div class="img-content">
                             <h3>The Wynn Las Vegas <span class="tag consider">Option to Consider</span></h3>
-                            <p>The undisputed luxury benchmark for secure parking logistics on the Strip. Features multi-layered, heavily monitored covered self-parking and clean valet parameters with extra-wide lanes to isolate your rig.</p>
+                            <p>The undisputed luxury benchmark for secure parking logistics on the Strip. Features clean valet parameters with extra-wide lanes to isolate your rig.</p>
                         </div>
                     </div>
                 </div>
@@ -551,49 +408,33 @@
             <div id="day4-container" class="day-container">
                 <h2 class="day-header-title">Las Vegas to La Jolla</h2>
                 
-                <div class="weather-container">
-                    <a class="weatherwidget-io" href="https://forecast7.com/en/32d83n117d27/la-jolla/" data-label_1="LA JOLLA, CA" data-label_2="FORECAST" data-theme="pure" data-basecolor="#ffffff" data-textcolor="#18181b">LA JOLLA, CA FORECAST</a>
+                <div class="interactive-map-widget" id="map-day4">
+                    <a href="https://www.google.com/maps/dir/Las+Vegas,+NV/Torrey+Pines+State+Reserve,+CA/La+Jolla,+San+Diego,+CA/" target="_blank" class="map-overlay-btn">Open in Google Maps</a>
                 </div>
 
+                <div class="weather-container"><a class="weatherwidget-io" href="https://forecast7.com/en/32d83n117d27/la-jolla/" data-label_1="LA JOLLA, CA" data-label_2="FORECAST" data-theme="pure" data-basecolor="#ffffff" data-textcolor="#18181b">LA JOLLA, CA FORECAST</a></div>
+
                 <div class="tab-bar">
-                    <button class="tab-button active" onclick="switchTab(this, 'd4-timeline')">🧭 Timeline & Navigation</button>
+                    <button class="tab-button active" onclick="switchTab(this, 'd4-timeline')">🧭 Timeline</button>
                     <button class="tab-button" onclick="switchTab(this, 'd4-culinary')">☕ Fuel & Dining</button>
                     <button class="tab-button" onclick="switchTab(this, 'd4-photo')">📷 Photo Detours</button>
-                    <button class="tab-button" onclick="switchTab(this, 'd4-lodging')">🛏️ Lodging Command</button>
+                    <button class="tab-button" onclick="switchTab(this, 'd4-lodging')">🛏️ Lodging Options</button>
                 </div>
 
                 <div id="d4-timeline" class="tab-pane active">
-                    <div class="safety-banner">
-                        <strong>Safety Protocol:</strong> Pushing through the deep high-desert plains of Barstow. Departing early at 8:00 AM guarantees you clear the hot desert corridors before peak afternoon thermal maximums, dropping into Southern California's marine layer safely on schedule.
-                    </div>
+                    <div class="safety-banner"><strong>Safety Protocol:</strong> Departing early at 8:00 AM guarantees you clear the hot desert corridors before peak afternoon thermal maximums.</div>
                     <div class="card">
                         <div class="timeline-item">
                             <div class="time">08:00 AM</div>
-                            <div class="event">
-                                <h4>Mojave Run <a href="#" class="btn" style="margin-left: auto;">📍 Live Map</a></h4>
-                                <p>Clear the Strip early after picking up specialty fuel to cross the remote desert valleys.</p>
-                            </div>
+                            <div class="event"><h4>Mojave Run</h4><p>Clear the Strip early after picking up specialty fuel to cross the remote desert valleys.</p></div>
                         </div>
                         <div class="timeline-item">
                             <div class="time">10:30 AM</div>
-                            <div class="event">
-                                <h4>EddieWorld <span class="tag fuel">Iconic Fuel Stop</span></h4>
-                                <p>Yermo, CA on I-15. The crown jewel of California desert fuel stops. Look for the massive ice cream sundae building. Pristine restrooms, dozens of pumps, and an insane selection of jerky and snacks before hitting the Cajon Pass.</p>
-                            </div>
-                        </div>
-                        <div class="timeline-item">
-                            <div class="time">11:30 AM</div>
-                            <div class="event">
-                                <h4>Cajon Pass Descent</h4>
-                                <p>Scale the massive pass partition, dropping smoothly out of the dry high-desert air down into the cooler coastal basin networks.</p>
-                            </div>
+                            <div class="event"><h4>EddieWorld <span class="tag fuel">Fuel Stop</span></h4><p>Yermo, CA. Pristine restrooms, dozens of pumps, and an insane selection of snacks before tackling Cajon Pass.</p></div>
                         </div>
                         <div class="timeline-item">
                             <div class="time">03:00 PM</div>
-                            <div class="event">
-                                <h4>Target Arrival: La Jolla</h4>
-                                <p>Arrive directly on the bluffs of North Torrey Pines Road in the late afternoon. Get comfortable with the ocean breeze hours before your 5:30 PM coastal dinner.</p>
-                            </div>
+                            <div class="event"><h4>Target Arrival: La Jolla</h4><p>Arrive directly on the bluffs of North Torrey Pines Road in the late afternoon. Get comfortable with the ocean breeze hours before your 5:30 PM coastal dinner.</p></div>
                         </div>
                     </div>
                 </div>
@@ -603,7 +444,7 @@
                         <div class="img-frame"><img src="https://images.unsplash.com/photo-1447933601403-0c6688de566e?auto=format&fit=crop&w=800&q=80" alt="Coffee"></div>
                         <div class="img-content">
                             <h3>Mothership Coffee Roasters <span class="tag coffee">07:30 AM Coffee Stop</span></h3>
-                            <p>Tucked inside the converted industrial layout of Fergusons Downtown. A beautiful, design-centric open courtyard project. Pick up a highly precise manual pour-over before hitting the Mojave.</p>
+                            <p>Pick up a highly precise manual pour-over before hitting the Mojave. Maintain biohacking routines seamlessly on the road.</p>
                         </div>
                     </div>
                 </div>
@@ -613,7 +454,7 @@
                         <div class="img-frame"><img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80" alt="Pacific"></div>
                         <div class="img-content">
                             <h3>Torrey Pines Bluffs <span class="tag photo">3:15 PM Coastal Light</span></h3>
-                            <p>As you descend the ocean bluffs on North Torrey Pines Road, the clear coastal marine layer reflects a sparkling blue canvas. Pull off safely near the beachfront reserve boundaries; the crisp Pacific horizon combined with the towering sandstone sea cliffs creates the ultimate triumphant photo backdrop.</p>
+                            <p>The crisp Pacific horizon combined with the towering sandstone sea cliffs creates the ultimate triumphant photo backdrop.</p>
                         </div>
                     </div>
                 </div>
@@ -623,7 +464,7 @@
                         <div class="img-frame"><img src="https://images.unsplash.com/photo-1584132967334-10e028bd69f7?auto=format&fit=crop&w=800&q=80" alt="Lodge"></div>
                         <div class="img-content">
                             <h3>The Lodge at Torrey Pines <span class="tag decided">Decided</span></h3>
-                            <p>An extraordinary 5-star Craftsman masterpiece sitting directly along the coastal cliffs. Offers incredibly private luxury suites, peaceful estate grounds, and heavily monitored security parameters to safely shelter your vehicle at the journey's end.</p>
+                            <p>An extraordinary 5-star Craftsman masterpiece sitting directly along the coastal cliffs. Peaceful estate grounds, and heavily monitored security parameters.</p>
                         </div>
                     </div>
                 </div>
@@ -632,9 +473,40 @@
         </div>
     </div>
 
-    <!-- Weather Widget Script & Tab Logic -->
+    <!-- Leaflet JS and Weather Widget -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <script>
         !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src='https://weatherwidget.io/js/widget.min.js';fjs.parentNode.insertBefore(js,fjs);}}(document,'script','weatherwidget-io-js');
+
+        // Initialize maps dictionary
+        const maps = {};
+
+        function initMap(dayId, latlngs) {
+            const mapEl = document.getElementById('map-' + dayId);
+            if (!mapEl || maps[dayId]) return; // Already initialized
+
+            const map = L.map('map-' + dayId, { zoomControl: false, scrollWheelZoom: false }).setView(latlngs[0], 6);
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+                attribution: '&copy; OpenStreetMap contributors',
+                maxZoom: 18
+            }).addTo(map);
+
+            const route = L.polyline(latlngs, {color: '#ea580c', weight: 4, opacity: 0.8}).addTo(map);
+            map.fitBounds(route.getBounds(), { padding: [30, 30] });
+            
+            // Add Start/End Markers
+            L.circleMarker(latlngs[0], {radius: 6, fillColor: '#0f172a', color: '#fff', weight: 2, fillOpacity: 1}).addTo(map);
+            L.circleMarker(latlngs[latlngs.length - 1], {radius: 6, fillColor: '#ea580c', color: '#fff', weight: 2, fillOpacity: 1}).addTo(map);
+
+            maps[dayId] = map;
+        }
+
+        const routeData = {
+            'day1': [[38.8338, -104.8213], [38.5733, -109.5498]], // COS to Moab
+            'day2': [[38.5733, -109.5498], [37.0965, -113.5684]], // Moab to St George
+            'day3': [[37.0965, -113.5684], [36.1699, -115.1398]], // St George to Vegas
+            'day4': [[36.1699, -115.1398], [32.8328, -117.2712]]  // Vegas to La Jolla
+        };
 
         function switchDay(dayNum, navElement) {
             document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
@@ -646,6 +518,11 @@
                 activeContainer.classList.add('active');
                 const firstTabButton = activeContainer.querySelector('.tab-button');
                 if(firstTabButton) { firstTabButton.click(); }
+                
+                // Initialize/Refresh Map bounds on tab switch
+                const dayKey = 'day' + dayNum;
+                initMap(dayKey, routeData[dayKey]);
+                setTimeout(() => { maps[dayKey].invalidateSize(); }, 100);
             }
         }
 
@@ -658,6 +535,11 @@
             const targetPane = document.getElementById(targetPaneId);
             if(targetPane) { targetPane.classList.add('active'); }
         }
+
+        // Initialize Day 1 Map on load
+        window.onload = () => {
+            initMap('day1', routeData['day1']);
+        };
     </script>
 </body>
-</html>
+</html>"""
