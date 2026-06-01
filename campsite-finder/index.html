@@ -104,7 +104,8 @@
             document.getElementById('statusUpdate').innerText = "Ranking live inventory...";
 
             for(let fac of facilities) {
-                const targetUrl = `https://www.recreation.gov/api/camps/availability/campground/${fac.FacilityID}/month?start_date=${month}-01T00:00:00.000Z`;
+                // const targetUrl = `https://www.recreation.gov/api/camps/availability/campground/${fac.FacilityID}/month?start_date=${month}-01T00:00:00.000Z`;
+                const targetUrl = `https://www.recreation.gov/api/camps/availability/campground/${fac.FacilityID}/month?start_date=${month}-01T00%3A00%3A00.000Z`;
                 // Using CodeTabs proxy to attempt to bypass the WAF
                 const liveUrl = `https://camp-proxy.rbector.workers.dev/?url=${encodeURIComponent(targetUrl)}`;
                 
