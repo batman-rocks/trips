@@ -104,22 +104,19 @@
             document.getElementById('statusUpdate').innerText = "Ranking live inventory...";
 
             for(let fac of facilities) {
-                // The exact target URL we want to hit
                 const targetUrl = `https://www.recreation.gov/api/camping/campgrounds/${fac.FacilityID}/month?start_date=${month}-01T00:00:00.000Z`;
                 
-                // Wrapping it in the allorigins proxy and encoding the URL so the firewall doesn't break it
-                const liveUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`;
+                // Using CodeTabs proxy to attempt to bypass the WAF
+                const liveUrl = `https://api.codetabs.com/v1/proxy?quest=${targetUrl}`;
                 
                 try {
-                    const response = await fetch(liveUrl, { 
-                        headers: { 
-                            'X-Requested-With': 'XMLHttpRequest',
-                            'Accept': 'application/json'
-                        } 
-                    });
+                    // Stripped custom headers to avoid triggering CORS preflight flags
+                    const response = await fetch(liveUrl);
                     if(response.ok) {
                         const data = await response.json();
                         processAndRankSites(fac.FacilityName, data.campsites, isWeekendOnly, displayArea);
+                    } else {
+                         console.log(`Rec.gov blocked the proxy for ${fac.FacilityName}`);
                     }
                 } catch(err) {
                     console.log(`Skipped ${fac.FacilityName} due to CORS/Fetch error.`);
