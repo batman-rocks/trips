@@ -3744,11 +3744,23 @@
         var SCOPE = 'https://www.googleapis.com/auth/drive.appdata';
         var FILE_NAME = 'trip-state.json';
         var FLAG = 'sd-drive-on';
+        var TOK_KEY = 'sd-drive-tok';
         var token = null, tokenClient = null, gisLoaded = false, fileId = null, debounce = 0;
 
         function configured(){ return CLIENT_ID.indexOf('__PASTE') !== 0; }
         function status(state, label, extra){ if (window.__syncStatus) window.__syncStatus(state, label, extra || {}); }
         function authHeader(){ return { 'Authorization': 'Bearer ' + token }; }
+        // Persist the access token across reloads so iOS Safari (ITP blocks the silent
+        // re-auth iframe) doesn't re-prompt on every load. Tokens are ~1h; reuse until then.
+        function saveToken(tok, expiresIn){
+            var exp = Date.now() + ((parseInt(expiresIn, 10) || 3600) - 90) * 1000;
+            try { localStorage.setItem(TOK_KEY, JSON.stringify({ t: tok, e: exp })); } catch (e){}
+        }
+        function cachedToken(){
+            try { var o = JSON.parse(localStorage.getItem(TOK_KEY) || 'null'); if (o && o.t && o.e > Date.now()) return o.t; } catch (e){}
+            return null;
+        }
+        function clearToken(){ token = null; try { localStorage.removeItem(TOK_KEY); } catch (e){} }
 
         function loadGis(cb){
             if (gisLoaded && window.google && google.accounts && google.accounts.oauth2) { cb(); return; }
@@ -3766,7 +3778,7 @@
             tokenClient = google.accounts.oauth2.initTokenClient({
                 client_id: CLIENT_ID, scope: SCOPE,
                 callback: function (resp){
-                    if (resp && resp.access_token) { token = resp.access_token; onAuthed(); }
+                    if (resp && resp.access_token) { token = resp.access_token; saveToken(token, resp.expires_in); onAuthed(); }
                     else status('err', 'Save', { drive: '☁️  Sign-in failed — retry' });
                 }
             });
@@ -3777,18 +3789,19 @@
             try { tokenClient.requestAccessToken({ prompt: silent ? '' : 'consent' }); }
             catch (e) { status('err', 'Save'); }
         }
+        function ok(r){ if (r.status === 401 || r.status === 403){ var e = new Error('auth'); e.auth = true; throw e; } return r; }
         function findFile(){
             return fetch('https://www.googleapis.com/drive/v3/files?spaces=appDataFolder&fields=files(id)&q=' + encodeURIComponent("name='" + FILE_NAME + "'"), { headers: authHeader() })
-                .then(function (r){ return r.json(); })
+                .then(ok).then(function (r){ return r.json(); })
                 .then(function (j){ var f = j.files && j.files[0]; fileId = f ? f.id : null; return f || null; });
         }
         function download(id){
-            return fetch('https://www.googleapis.com/drive/v3/files/' + id + '?alt=media', { headers: authHeader() }).then(function (r){ return r.json(); });
+            return fetch('https://www.googleapis.com/drive/v3/files/' + id + '?alt=media', { headers: authHeader() }).then(ok).then(function (r){ return r.json(); });
         }
         function upload(snapStr){
             if (fileId){
                 return fetch('https://www.googleapis.com/upload/drive/v3/files/' + fileId + '?uploadType=media', {
-                    method: 'PATCH', headers: Object.assign({ 'Content-Type': 'application/json' }, authHeader()), body: snapStr });
+                    method: 'PATCH', headers: Object.assign({ 'Content-Type': 'application/json' }, authHeader()), body: snapStr }).then(ok);
             }
             var boundary = '----trip' + Date.now();
             var meta = { name: FILE_NAME, parents: ['appDataFolder'] };
@@ -3796,14 +3809,18 @@
                 '\r\n--' + boundary + '\r\nContent-Type: application/json\r\n\r\n' + snapStr + '\r\n--' + boundary + '--';
             return fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id', {
                 method: 'POST', headers: Object.assign({ 'Content-Type': 'multipart/related; boundary=' + boundary }, authHeader()), body: body })
-                .then(function (r){ return r.json(); }).then(function (j){ if (j.id) fileId = j.id; return j; });
+                .then(ok).then(function (r){ return r.json(); }).then(function (j){ if (j.id) fileId = j.id; return j; });
+        }
+        function expiredAuth(){
+            clearToken();
+            status('idle', 'Save', { drive: '☁️  Sign in to sync', note: 'Drive session expired — tap to reconnect.' });
         }
         function pushLocal(){
             if (!token || !window.TripSync) return Promise.resolve();
             status('busy', 'Saving…');
             return upload(window.TripSync.snapshotString())
-                .then(function(){ status('on', 'Synced', { drive: '☁️  Disconnect Drive', note: 'Synced to your Google Drive (appData).' }); })
-                .catch(function(){ status('err', 'Save', { drive: '☁️  Sync failed — retry' }); });
+                .then(function(r){ if (r && r.status === 401) { expiredAuth(); return; } status('on', 'Synced', { drive: '☁️  Disconnect Drive', note: 'Synced to your Google Drive (appData).' }); })
+                .catch(function(err){ if (err && err.auth) expiredAuth(); else status('err', 'Save', { drive: '☁️  Sync failed — retry' }); });
         }
         function onAuthed(){
             try { localStorage.setItem(FLAG, '1'); } catch (e){}
@@ -3819,7 +3836,7 @@
                         return pushLocal();                                       // local newer/equal → push
                     }
                 });
-            }).catch(function(){ status('err', 'Save', { drive: '☁️  Sync failed — retry' }); });
+            }).catch(function(err){ if (err && err.auth) expiredAuth(); else status('err', 'Save', { drive: '☁️  Sync failed — retry' }); });
         }
         function connect(){
             if (!configured()){
@@ -3836,7 +3853,7 @@
             loadGis(function(){ requestToken(false); });
         }
         function disconnect(){
-            token = null; fileId = null;
+            fileId = null; clearToken();
             try { localStorage.removeItem(FLAG); } catch (e){}
             status('idle', 'Save', { drive: '☁️  Sign in to sync', note: 'Saved only in this browser until you connect Drive.' });
         }
@@ -3849,7 +3866,10 @@
 
         function autoReconnect(){
             var on = false; try { on = localStorage.getItem(FLAG) === '1'; } catch (e){}
-            if (on && configured()) loadGis(function(){ requestToken(true); });
+            if (!(on && configured())) return;
+            var cached = cachedToken();
+            if (cached){ token = cached; onAuthed(); return; }   // reuse valid token — no Google round-trip, no Safari prompt
+            loadGis(function(){ requestToken(true); });
         }
         if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', autoReconnect); else autoReconnect();
     })();
