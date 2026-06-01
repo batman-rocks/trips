@@ -25,13 +25,13 @@
 <body>
 
     <h2>🏕️ Smart Campground Ranker</h2>
-    <p>Finds nearby campgrounds, filters for your required days, and sorts available sites by desirability and driveway clearance (ideal if you are bringing an F-150 Tremor or a larger rig).</p>
+    <p>Finds nearby campgrounds, checks live availability via worker proxy, and sorts available weekend sites by desirability.</p>
 
     <div class="dashboard">
         <div class="controls">
             <div>
                 <label>RIDB API Key</label>
-                <input type="password" id="apiKey" value="6c18c329-d734-4fb2-9cc2-3b0e0961bf85" type="password">
+                <input type="password" id="apiKey" value="6c18c329-d734-4fb2-9cc2-3b0e0961bf85">
             </div>
             <div>
                 <label>Search Radius</label>
@@ -62,7 +62,8 @@
     <div id="displayArea"></div>
 
     <script>
-        const proxy = "https://corsproxy.io/?";
+        // Universal proxy for the official government API
+        const officialProxy = "https://corsproxy.io/?";
 
         function startSearch() {
             const apiKey = document.getElementById('apiKey').value.trim();
@@ -77,11 +78,13 @@
             );
         }
 
+        // STEP 1: Get locations using the official API
         async function fetchCampgrounds(lat, lon, apiKey) {
             const radius = document.getElementById('radius').value;
             document.getElementById('statusUpdate').innerText = `Searching within ${radius} miles...`;
             
-            const url = `${proxy}https://ridb.recreation.gov/api/v1/facilities?latitude=${lat}&longitude=${lon}&radius=${radius}&activity=CAMPING&limit=10`;
+            const url = `${officialProxy}https://ridb.recreation.gov/api/v1/facilities?latitude=${lat}&longitude=${lon}&radius=${radius}&activity=CAMPING&limit=10`;
+            
             try {
                 const res = await fetch(url, { headers: { 'apikey': apiKey, 'Accept': 'application/json' } });
                 const json = await res.json();
@@ -93,10 +96,11 @@
                 
                 scanAvailability(json.RECDATA);
             } catch(e) {
-                document.getElementById('statusUpdate').innerText = `API Error: ${e.message}`;
+                document.getElementById('statusUpdate').innerText = `Location API Error: ${e.message}`;
             }
         }
 
+        // STEP 2: Hit your Cloudflare Worker for Live Internal Data
         async function scanAvailability(facilities) {
             const month = document.getElementById('targetMonth').value;
             const isWeekendOnly = document.getElementById('weekendOnly').checked;
@@ -104,55 +108,55 @@
             document.getElementById('statusUpdate').innerText = "Ranking live inventory...";
 
             for(let fac of facilities) {
-                // const targetUrl = `https://www.recreation.gov/api/camps/availability/campground/${fac.FacilityID}/month?start_date=${month}-01T00:00:00.000Z`;
+                // The correct internal URL with strictly encoded %3A colons
                 const targetUrl = `https://www.recreation.gov/api/camps/availability/campground/${fac.FacilityID}/month?start_date=${month}-01T00%3A00%3A00.000Z`;
-                // Using CodeTabs proxy to attempt to bypass the WAF
+                
+                // Your dedicated Cloudflare Worker proxy
                 const liveUrl = `https://camp-proxy.rbector.workers.dev/?url=${encodeURIComponent(targetUrl)}`;
                 
-                
                 try {
-                    // Stripped custom headers to avoid triggering CORS preflight flags
-                    const response = await fetch(liveUrl);
+                    const response = await fetch(liveUrl, { 
+                        headers: { 
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Accept': 'application/json'
+                        } 
+                    });
+                    
                     if(response.ok) {
                         const data = await response.json();
-                        processAndRankSites(fac.FacilityName, data.campsites, isWeekendOnly, displayArea);
-                    } else {
-                         console.log(`Rec.gov blocked the proxy for ${fac.FacilityName}`);
+                        if(data && data.campsites) {
+                            processAndRankSites(fac.FacilityName, data.campsites, isWeekendOnly, displayArea);
+                        }
                     }
                 } catch(err) {
-                    console.log(`Skipped ${fac.FacilityName} due to CORS/Fetch error.`);
+                    console.log(`Skipped ${fac.FacilityName} due to unreservable status or network drop.`);
                 }
             }
             document.getElementById('statusUpdate').innerText = "Scan complete!";
         }
-        
 
+        // STEP 3: Parse, Filter, and Score the raw matrices
         function processAndRankSites(campName, campsites, weekendOnly, container) {
-            if(!campsites) return;
-
             let rankedSites = [];
 
-            // 1. Iterate through every site in the campground
             for(let key in campsites) {
                 const site = campsites[key];
                 let validDates = [];
 
-                // 2. Filter dates based on availability and weekend logic
                 for(let dateStr in site.availabilities) {
                     if(site.availabilities[dateStr] === 'Available') {
-                        // FIX: Directly parse the new ISO timestamp provided by the API
-                        const dateObj = new Date(dateStr);
-                        const dayOfWeek = dateObj.getDay(); 
                         
-                        // 5 = Friday, 6 = Saturday
+                        const dateObj = new Date(dateStr);
+                        // FIX: getUTCDay() ensures timezone shifts don't ruin the weekend math
+                        const dayOfWeek = dateObj.getUTCDay(); 
+                        
                         if(weekendOnly && dayOfWeek !== 5 && dayOfWeek !== 6) {
-                            continue; // Skip weekdays if filter is on
+                            continue; 
                         }
-                        validDates.push(dateStr.substring(5, 10)); // Save MM-DD
+                        validDates.push(dateStr.substring(5, 10));
                     }
                 }
 
-                // 3. If the site has dates that passed the filter, calculate its Score
                 if(validDates.length > 0) {
                     let score = 0;
 
@@ -170,7 +174,6 @@
                 }
             }
 
-            // 4. Sort and Render
             rankedSites.sort((a, b) => b.score - a.score);
 
             if(rankedSites.length > 0) {
@@ -197,8 +200,6 @@
                 container.appendChild(campNode);
             }
         }
-      
-        
     </script>
 </body>
 </html>
