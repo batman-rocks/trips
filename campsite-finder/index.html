@@ -140,7 +140,8 @@
                 // 2. Filter dates based on availability and weekend logic
                 for(let dateStr in site.availabilities) {
                     if(site.availabilities[dateStr] === 'Available') {
-                        const dateObj = new Date(dateStr + "T00:00:00");
+                        // FIX: Directly parse the new ISO timestamp provided by the API
+                        const dateObj = new Date(dateStr);
                         const dayOfWeek = dateObj.getDay(); 
                         
                         // 5 = Friday, 6 = Saturday
@@ -151,19 +152,12 @@
                     }
                 }
 
-                // 3. If the site has dates that passed the filter, calculate its Desirability Score
+                // 3. If the site has dates that passed the filter, calculate its Score
                 if(validDates.length > 0) {
                     let score = 0;
 
-                    // Example Algorithmic Scoring Rules:
-                    
-                    // Rule A: Premium loops usually have better views/spacing
                     if(site.loop && site.loop.toLowerCase().includes("premium")) score += 20;
-                    
-                    // Rule B: RV/Truck compatibility (Valuable for larger rigs)
                     if(site.campsite_type === "RV NON-ELECTRIC" || site.campsite_type === "STANDARD ELECTRIC") score += 15;
-                    
-                    // Rule C: Bonus points for having multiple days open (easier to book a full weekend)
                     score += (validDates.length * 2);
 
                     rankedSites.push({
@@ -176,16 +170,14 @@
                 }
             }
 
-            // 4. Sort the array from highest score to lowest
+            // 4. Sort and Render
             rankedSites.sort((a, b) => b.score - a.score);
 
-            // 5. Render the results to the UI
             if(rankedSites.length > 0) {
                 const campNode = document.createElement('div');
                 campNode.className = 'camp-node';
                 let html = `<div class="camp-header">🌲 ${campName}</div>`;
                 
-                // Show top 10 best-ranked sites
                 rankedSites.slice(0, 10).forEach(s => {
                     html += `
                         <div class="site-card">
@@ -205,6 +197,8 @@
                 container.appendChild(campNode);
             }
         }
+      
+        
     </script>
 </body>
 </html>
