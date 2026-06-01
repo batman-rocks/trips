@@ -682,6 +682,20 @@
         .un-foot { padding: 12px 16px 16px; border-top: 1px solid var(--rule); }
         .un-refresh { width: 100%; padding: 10px; border: 1px solid var(--rule); background: var(--bg-2); color: var(--dim); border-radius: 10px; font-weight: 700; font-size: 0.82rem; cursor: pointer; }
         .un-refresh:hover { background: var(--rule); }
+        .un-foot-row { display: flex; gap: 8px; }
+        .un-foot-row .un-refresh, .un-foot-row .un-scan { flex: 1; }
+        .un-scan { padding: 10px; border: 1px solid var(--brand-soft, var(--rule)); background: var(--brand-wash); color: var(--brand); border-radius: 10px; font-weight: 800; font-size: 0.82rem; cursor: pointer; }
+        .un-scan:hover { background: var(--brand); color: #fff; }
+        .un-scan:disabled { opacity: 0.55; cursor: default; }
+        .live-divider { display: flex; align-items: center; gap: 8px; margin: 8px 2px 2px; font-size: 0.62rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; color: var(--faint); }
+        .live-divider::after { content: ''; flex: 1; height: 1px; background: var(--rule); }
+        .live-note { font-size: 0.76rem; color: var(--dim); line-height: 1.45; padding: 6px 2px; }
+        .live-note.err { color: var(--warn, #b91c1c); }
+        .src-badge { font-size: 0.58rem; font-weight: 800; padding: 2px 7px; border-radius: 20px; letter-spacing: 0.03em; white-space: nowrap; }
+        .src-badge.osm { background: rgba(126,188,111,0.20); color: #3f7e2f; }
+        .src-badge.wiki { background: rgba(51,102,153,0.16); color: #2f5d8c; }
+        body.unified .un-scan { background: transparent; color: var(--t-route); border-color: var(--t-route-soft); }
+        body.unified .un-scan:hover { background: var(--t-route); color: #fff; }
         @media (max-width: 640px) { .upnext-fab { right: 14px; bottom: 14px; padding: 12px 15px; } .upnext-fab .uf-label { display: none; } }
 
         /* ============================================================
@@ -723,8 +737,9 @@
            Route thread + boarding-pass tiles + split-flap board + passport
            stamps + topographic glass wash. Still one glass focus surface.
            ============================================================ */
-        /* topographic contour wash behind the one glass surface (pure CSS contours) */
-        body.unified .upnext-drawer { position: relative; }
+        /* topographic contour wash behind the one glass surface (pure CSS contours).
+           NB: .upnext-drawer is already position:fixed, which is its own positioning
+           context for the absolute ::before — do NOT override position here. */
         body.unified .upnext-drawer::before {
             content: ''; position: absolute; inset: 0; z-index: 0; pointer-events: none;
             background:
@@ -756,6 +771,26 @@
         /* refresh → a ticket-stub CTA */
         body.unified .un-refresh { background: var(--t-route); color: #fff; border: none; border-radius: 8px; }
         body.unified .un-refresh:hover { background: #9a4708; }
+
+        /* ---- save / sync / share control ---- */
+        .sync-wrap { position: relative; }
+        .sync-btn { display: inline-flex; align-items: center; gap: 7px; }
+        .sync-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--rule, #cbd5e1); transition: background .2s; flex: none; }
+        .sync-dot.on { background: #16a34a; }
+        .sync-dot.busy { background: #d97706; animation: syncPulse 1s ease-in-out infinite; }
+        .sync-dot.err { background: #dc2626; }
+        @keyframes syncPulse { 0%,100%{opacity:1} 50%{opacity:.3} }
+        .sync-menu { position: absolute; right: 0; top: calc(100% + 9px); width: 256px; background: #fff; border: 1px solid var(--rule, #e5e7eb); border-radius: 13px; box-shadow: 0 20px 50px rgba(15,23,42,0.20); padding: 7px; z-index: 80; }
+        .sync-menu[hidden] { display: none; }
+        .sync-sec { font-size: 10px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted, #94a3b8); padding: 8px 8px 4px; }
+        .sync-item { display: block; width: 100%; text-align: left; background: none; border: 0; border-radius: 9px; padding: 9px 9px; font: inherit; font-size: 13px; color: var(--ink, #0f172a); cursor: pointer; }
+        .sync-item:hover { background: rgba(180,83,9,0.09); }
+        .sync-note { font-size: 11px; color: var(--muted, #94a3b8); padding: 7px 9px 4px; line-height: 1.45; }
+        /* unified · travel skin: the sync menu joins the one glass-surface family */
+        body.unified .sync-menu { background: var(--u-glass-bg, rgba(255,255,255,0.86)); -webkit-backdrop-filter: blur(16px) saturate(1.5); backdrop-filter: blur(16px) saturate(1.5); border-color: var(--t-route-soft); }
+        body.unified .sync-item { font-variant-numeric: tabular-nums; }
+        body.unified .sync-item:hover { background: var(--t-route-soft); }
+        body.unified .sync-sec { color: var(--t-route); }
     </style>
 </head>
 <body>
@@ -798,6 +833,21 @@
                 <div class="k">Expedition progress</div>
                 <div class="v" id="progressText">0 of 30 stops logged</div>
             </div>
+            <div class="sync-wrap" id="syncWrap">
+                <button class="ghost-btn sync-btn" id="syncBtn" aria-haspopup="true" aria-expanded="false" title="Save, sync & share">
+                    <span class="sync-dot" id="syncDot"></span><span id="syncLabel">Save</span>
+                </button>
+                <div class="sync-menu" id="syncMenu" role="menu" hidden>
+                    <div class="sync-sec">This device</div>
+                    <button class="sync-item" id="syncExport" role="menuitem">⬇️&nbsp;&nbsp;Download backup (.json)</button>
+                    <button class="sync-item" id="syncImport" role="menuitem">⬆️&nbsp;&nbsp;Restore from file…</button>
+                    <button class="sync-item" id="syncShare" role="menuitem">🔗&nbsp;&nbsp;Copy share link</button>
+                    <div class="sync-sec">Google Drive</div>
+                    <button class="sync-item" id="syncDrive" role="menuitem">☁️&nbsp;&nbsp;Sign in to sync</button>
+                    <div class="sync-note" id="syncNote">Saved only in this browser until you connect Drive.</div>
+                </div>
+                <input type="file" id="syncFile" accept="application/json,.json" hidden>
+            </div>
             <button class="ghost-btn" id="resetBtn">Reset</button>
         </div>
     </header>
@@ -819,7 +869,7 @@
         </div>
         <div class="un-guess" id="unGuess" hidden></div>
         <div class="un-list" id="unList"></div>
-        <div class="un-foot"><button class="un-refresh" id="unRefresh">&#8635; Refresh my location</button></div>
+        <div class="un-foot"><div class="un-foot-row"><button class="un-refresh" id="unRefresh">&#8635; Refresh</button><button class="un-scan" id="unScan">&#10024; Scan live</button></div></div>
     </aside>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
@@ -872,7 +922,7 @@
                 stops: [
                     { t:'08:00 AM', title:'Wheels Up', cat:'depart', lat:38.8339, lng:-104.8214, leg:'Start',
                       desc:'Dial in your morning NAC and Tongkat Ali stack. Depart early via US-24 W past Ute Pass.',
-                      detail:'US-24 W over Ute Pass, then I-70 W through Glenwood Canyon — one of the most scenic interstate stretches in the country. Aim to clear the Eisenhower Tunnel before mid-morning ski traffic.',
+                      detail:'US-24 W over Ute Pass and down through Buena Vista, then up past Leadville (10,150 ft — the highest city in North America) and over Fremont Pass. Join I-70 W at Copper, crest Vail Pass, and ride down through the spectacular Glenwood Canyon — one of the most scenic interstate stretches in the country.',
                       gmapsQ:'Colorado Springs, CO' },
                     { t:'12:30 PM', title:"Maverik Adventure's Stop", cat:'fuel', lat:39.0814, lng:-108.5631, leg:'+245 mi · 4h',
                       desc:'Grand Junction, CO. Pristine restrooms and heavy-duty pumps to top off the 36-gallon tank before the remote Utah desert stretches.',
@@ -1417,13 +1467,13 @@
         let s = null; try { s = localStorage.getItem(SKEY); } catch(e){}
         return new Date((s || DEFAULT_START) + 'T12:00:00');
     }
-    function setTripStart(iso){ try { localStorage.setItem(SKEY, iso); } catch(e){} }
+    function setTripStart(iso){ try { localStorage.setItem(SKEY, iso); } catch(e){} touchSync(); }
     function dayDate(n){ const d = getTripStart(); d.setDate(d.getDate() + (n-1)); return d; }
 
     /* ---------- nights in San Diego + per-day dates (round trip) ---------- */
     const NKEY = 'sd-sd-nights-v1';
     function getNights(){ let n = null; try { n = localStorage.getItem(NKEY); } catch(e){} const v = parseInt(n, 10); return (isNaN(v) || v < 0) ? 1 : v; }
-    function setNights(v){ try { localStorage.setItem(NKEY, String(Math.max(0, parseInt(v,10)||0))); } catch(e){} }
+    function setNights(v){ try { localStorage.setItem(NKEY, String(Math.max(0, parseInt(v,10)||0))); } catch(e){} touchSync(); }
     function dayOffset(d){
         if(d.seg !== 'ret') return d.n - 1;                       // outbound: day 1 = offset 0
         const outCount = TRIP.days.filter(x=>x.seg !== 'ret').length;
@@ -1594,7 +1644,7 @@
     const CKEY = 'sd-custom-v1';
     let custom = { added:{}, favs:[], own:[] };
     try { const c = JSON.parse(localStorage.getItem(CKEY) || 'null'); if(c) custom = Object.assign({ added:{}, favs:[], own:[] }, c); } catch(e){}
-    function saveCustom(){ try { localStorage.setItem(CKEY, JSON.stringify(custom)); } catch(e){} }
+    function saveCustom(){ try { localStorage.setItem(CKEY, JSON.stringify(custom)); } catch(e){} touchSync(); }
     function addedFor(dayId){ return custom.added[dayId] || []; }
     function isAdded(dayId, id){ return addedFor(dayId).includes(id); }
     function toggleAdded(dayId, id){
@@ -1619,7 +1669,7 @@
     const PKEY = 'sd-expedition-progress-v1';
     let progress = {};
     try { progress = JSON.parse(localStorage.getItem(PKEY) || '{}'); } catch(e) { progress = {}; }
-    function saveProgress(){ try { localStorage.setItem(PKEY, JSON.stringify(progress)); } catch(e){} }
+    function saveProgress(){ try { localStorage.setItem(PKEY, JSON.stringify(progress)); } catch(e){} touchSync(); }
     function isDone(key){ return !!progress[key]; }
     function toggleDone(key){ progress[key] = !progress[key]; if(!progress[key]) delete progress[key]; saveProgress(); }
 
@@ -1680,7 +1730,7 @@
     const DAY_WATCH = {
         day1: [
             "Arches needs a timed-entry permit (Apr\u2013Oct) \u2014 book it now on recreation.gov or you\u2019ll be turned away.",
-            "Eisenhower Tunnel & Vail Pass sit above 10,000 ft \u2014 expect ear-pop, weaker engine pull, and fast weather swings.",
+            "Fremont Pass (11,318 ft) & Vail Pass (10,662 ft) \u2014 expect ear-pop, weaker engine pull, and fast weather swings up high.",
             "Glenwood Canyon (I-70) closes for rockfall and fire with little warning \u2014 check COtrip.org before you roll.",
             "Top off fuel in Grand Junction; the byway down into Moab has long gaps."
         ],
@@ -1733,15 +1783,44 @@
         return null;
     }
 
-    /* ---------- detour estimator: how far a place sits off the planned drive ---------- */
+    /* ---------- detour estimator: how far a place sits off the planned drive ----------
+       Measures perpendicular distance to the actual route POLYLINE (the day's waypoint
+       corridor), not the sparse stop list — otherwise an on-route place that happens to
+       sit far from the nearest *stop* (e.g. Glenwood Canyon between CO Springs & Moab)
+       gets a huge phantom detour. */
     const DETOUR_MPH = 45, DETOUR_ROAD_FACTOR = 1.35;
+    // planar point-to-segment distance in miles (equirectangular approx; accurate at these scales)
+    function pointToSegMi(plat, plng, alat, alng, blat, blng){
+        const latRef = toRad((alat + blat) / 2);
+        const kLat = 69.0, kLng = 69.0 * Math.cos(latRef);
+        const bx = (blng - alng) * kLng, by = (blat - alat) * kLat;
+        const px = (plng - alng) * kLng, py = (plat - alat) * kLat;
+        const len2 = bx*bx + by*by;
+        let t = len2 > 0 ? (px*bx + py*by) / len2 : 0;
+        t = Math.max(0, Math.min(1, t));
+        const cx = t*bx, cy = t*by;
+        return Math.hypot(px - cx, py - cy);
+    }
+    function distToPolylineMi(lat, lng, pts){
+        if(!pts || !pts.length) return Infinity;
+        if(pts.length === 1) return haversineMi(lat, lng, pts[0][0], pts[0][1]);
+        let best = Infinity;
+        for(let i = 0; i < pts.length - 1; i++){
+            const d = pointToSegMi(lat, lng, pts[i][0], pts[i][1], pts[i+1][0], pts[i+1][1]);
+            if(d < best) best = d;
+        }
+        return best;
+    }
     function detourFor(lat, lng, dayId){
         if(typeof lat !== 'number' || typeof lng !== 'number') return null;
-        const anchors = routeAnchors();
-        let pool = anchors.filter(a=> a.dayId === dayId);
-        if(!pool.length) pool = anchors;
         let off = Infinity;
-        pool.forEach(a=>{ const d = haversineMi(lat, lng, a.lat, a.lng); if(d < off) off = d; });
+        const d = TRIP.days.find(x=> x.id === dayId);
+        if(d && d.waypoints && d.waypoints.length){
+            off = distToPolylineMi(lat, lng, d.waypoints);
+        } else {
+            TRIP.days.forEach(x=>{ const o = distToPolylineMi(lat, lng, x.waypoints); if(o < off) off = o; });
+        }
+        if(!isFinite(off)) return null;
         const driveMin = Math.round(off * DETOUR_ROAD_FACTOR / DETOUR_MPH * 60) * 2; // out-and-back
         return { off, driveMin };
     }
@@ -2654,7 +2733,7 @@
     const PLANKEY = 'sd-planning-v1';
     let plan = { confirmed:{}, choice:{}, tasks:[] };
     try { const p = JSON.parse(localStorage.getItem(PLANKEY) || 'null'); if(p) plan = Object.assign({ confirmed:{}, choice:{}, tasks:[] }, p); } catch(e){}
-    function savePlan(){ try { localStorage.setItem(PLANKEY, JSON.stringify(plan)); } catch(e){} }
+    function savePlan(){ try { localStorage.setItem(PLANKEY, JSON.stringify(plan)); } catch(e){} touchSync(); }
     function isConfirmed(id){ return !!plan.confirmed[id]; }
     function toggleConfirm(id){ plan.confirmed[id] = !plan.confirmed[id]; if(!plan.confirmed[id]) delete plan.confirmed[id]; savePlan(); }
     function lodgeChoice(dayId){ return plan.choice['lodge-'+dayId]; }
@@ -3085,17 +3164,20 @@
         const numEl = document.getElementById('cdNum'), metaEl = document.getElementById('cdMeta');
         if(!numEl) return;
         const start = getTripStart(); start.setHours(8,0,0,0);
-        const end = dateForDay(TRIP.days[TRIP.days.length - 1]);
+        // La Jolla is the outbound turnaround (last non-return day), NOT the final day home.
+        const coastDay = TRIP.days.filter(d=> d.seg !== 'ret').slice(-1)[0] || TRIP.days[TRIP.days.length - 1];
+        const coast = dateForDay(coastDay);
+        const end = dateForDay(TRIP.days[TRIP.days.length - 1]);   // final day = back home
         const now = new Date();
         const ms = start - now;
         if(ms > 0){
             const days = Math.floor(ms / 86400000);
             const hrs = Math.floor((ms % 86400000) / 3600000);
             numEl.innerHTML = days + ' <small>days' + (days < 21 ? ', ' + hrs + ' hrs' : '') + '</small>';
-            metaEl.innerHTML = 'Wheels up <b>' + fmtDate(getTripStart()) + '</b> at 8:00 AM \u00B7 rolling into La Jolla <b>' + fmtDate(end) + '</b>.';
+            metaEl.innerHTML = 'Wheels up <b>' + fmtDate(getTripStart()) + '</b> at 8:00 AM \u00B7 reach La Jolla <b>' + fmtDate(coast) + '</b> \u00B7 home <b>' + fmtDate(end) + '</b>.';
         } else if(now <= new Date(end.getFullYear(), end.getMonth(), end.getDate(), 23, 59)){
             numEl.innerHTML = '\uD83D\uDE99 <small>en route</small>';
-            metaEl.innerHTML = 'Expedition underway \u2014 coast arrival <b>' + fmtDate(end) + '</b>.';
+            metaEl.innerHTML = 'Expedition underway \u2014 home <b>' + fmtDate(end) + '</b>.';
         } else {
             numEl.innerHTML = '\u2713 <small>complete</small>';
             metaEl.innerHTML = 'Mountain to coast, fully logged. Safe travels home.';
@@ -3187,8 +3269,8 @@
         }
         guess.innerHTML = gh; guess.hidden = !gh;
         listEl.innerHTML = '';
-        if(!ctx.list.length){ listEl.innerHTML = '<div class="un-empty">No catalogued places ahead \u2014 you\u2019re near the finish line!</div>'; return; }
-        ctx.list.forEach(c=>{
+        if(!ctx.list.length){ listEl.appendChild(el('<div class="un-empty">No catalogued places ahead \u2014 you\u2019re near the finish line!</div>')); }
+        else ctx.list.forEach(c=>{
             const p = c.p, cat = POI_CATS[p.cat] || { color:'#64748b', emoji:'\uD83D\uDCCD', label:'Place' };
             const dn = TRIP.days[c.dIdx] ? ('Day '+TRIP.days[c.dIdx].n) : '';
             const dayN = TRIP.days[c.dIdx] ? TRIP.days[c.dIdx].n : '';
@@ -3222,6 +3304,7 @@
             });
             listEl.appendChild(row);
         });
+        renderLiveInto(listEl);
     }
     function locateUpNext(force){
         const status = document.getElementById('unStatus');
@@ -3253,11 +3336,272 @@
         document.getElementById('upnextScrim').classList.remove('show');
     }
 
+    /* ============================================================
+       LIVE EN-ROUTE DISCOVERY  ·  OpenStreetMap Overpass + Wikipedia
+       Both are keyless & CORS-friendly. Candidates are filtered to the
+       route corridor (reusing the detour polyline math) so only places
+       genuinely *on the way* surface, then ranked by distance.
+       ============================================================ */
+    const LIVE = { state:'idle', items:null };
+    const LIVE_OSM_RADIUS_M = 18000, LIVE_WIKI_RADIUS_M = 10000, LIVE_CORRIDOR_MI = 7, LIVE_MAX = 24;
+    function liveCatFromTags(t){
+        t = t || {};
+        if(t.amenity === 'cafe' || t.amenity === 'restaurant') return 'food';
+        if(t.leisure === 'park' || t.leisure === 'nature_reserve') return 'park';
+        if(t.natural === 'waterfall' || t.natural === 'spring' || t.natural === 'hot_spring') return 'water';
+        if(t.natural === 'peak' || t.natural === 'arch' || t.natural === 'cliff') return 'scenic';
+        if(t.historic || t.tourism === 'museum') return 'history';
+        if(t.tourism === 'artwork') return 'quirky';
+        return 'scenic';
+    }
+    function osmLabel(t){
+        t = t || {};
+        if(t.tourism === 'viewpoint') return 'Viewpoint';
+        if(t.natural === 'peak') return 'Peak' + (t.ele ? ' (' + Math.round(t.ele) + ' m)' : '');
+        if(t.natural === 'waterfall') return 'Waterfall';
+        if(t.natural === 'hot_spring' || t.natural === 'spring') return 'Spring';
+        if(t.amenity === 'cafe') return 'Caf\u00E9';
+        if(t.amenity === 'restaurant') return 'Restaurant' + (t.cuisine ? ' \u00B7 ' + String(t.cuisine).replace(/[_;]/g,' ') : '');
+        if(t.leisure === 'park' || t.leisure === 'nature_reserve') return 'Park / reserve';
+        if(t.tourism === 'attraction') return 'Attraction';
+        if(t.tourism === 'museum') return 'Museum';
+        if(t.historic) return 'Historic \u00B7 ' + String(t.historic).replace(/_/g,' ');
+        return 'Place';
+    }
+    // Public Overpass instances are flaky/rate-limited & bot-protected; try a few in order.
+    const OVERPASS_EPS = [
+        'https://overpass-api.de/api/interpreter',
+        'https://overpass.private.coffee/api/interpreter',
+        'https://overpass.kumi.systems/api/interpreter'
+    ];
+    function overpassFetch(body, i){
+        i = i || 0;
+        if(i >= OVERPASS_EPS.length) return Promise.reject(new Error('overpass-all-down'));
+        const ctrl = new AbortController(), to = setTimeout(()=> ctrl.abort(), 14000);
+        return fetch(OVERPASS_EPS[i], { method:'POST', headers:{ 'Content-Type':'application/x-www-form-urlencoded' }, body:body, signal:ctrl.signal })
+            .then(res=>{
+                clearTimeout(to);
+                const ct = res.headers.get('content-type') || '';
+                if(!res.ok || ct.indexOf('json') === -1) throw new Error('overpass-' + res.status);
+                return res.json();
+            })
+            .catch(err=>{ clearTimeout(to); return overpassFetch(body, i + 1); });
+    }
+    function fetchOverpass(lat, lng){
+        const r = LIVE_OSM_RADIUS_M;
+        const q = '[out:json][timeout:25];('
+            + 'node(around:'+r+','+lat+','+lng+')[tourism~"^(viewpoint|attraction|artwork|museum|picnic_site)$"][name];'
+            + 'node(around:'+r+','+lat+','+lng+')[natural~"^(peak|waterfall|spring|hot_spring|arch)$"][name];'
+            + 'node(around:'+r+','+lat+','+lng+')[historic][name];'
+            + 'node(around:'+r+','+lat+','+lng+')[leisure~"^(park|nature_reserve)$"][name];'
+            + 'node(around:'+r+','+lat+','+lng+')[amenity~"^(cafe|restaurant)$"][name];'
+            + ');out body 90;';
+        return overpassFetch('data='+encodeURIComponent(q))
+            .then(j=> (j.elements||[]).filter(e=> e.lat && e.lon && e.tags && e.tags.name).map(e=>({
+                id:'live_osm_'+e.id, source:'osm', name:e.tags.name, lat:e.lat, lng:e.lon,
+                cat:liveCatFromTags(e.tags), blurb:osmLabel(e.tags)+' \u00B7 OpenStreetMap', q:e.tags.name
+            })));
+    }
+    function fetchWiki(lat, lng){
+        const url = 'https://en.wikipedia.org/w/api.php?action=query&format=json&origin=*&list=geosearch&gscoord='
+            + lat + '%7C' + lng + '&gsradius=' + LIVE_WIKI_RADIUS_M + '&gslimit=40';
+        return fetch(url).then(res=>{ if(!res.ok) throw new Error('wiki'); return res.json(); })
+            .then(j=> ((j.query && j.query.geosearch) || []).map(g=>({
+                id:'live_wiki_'+g.pageid, source:'wiki', name:g.title, lat:g.lat, lng:g.lon,
+                cat:'scenic', blurb:'Wikipedia article nearby', q:g.title, url:'https://en.wikipedia.org/?curid='+g.pageid
+            })));
+    }
+    function dedupeLive(items){
+        const out = [];
+        items.forEach(it=>{
+            const dup = out.find(o=> o.name.toLowerCase() === it.name.toLowerCase() || haversineMi(o.lat,o.lng,it.lat,it.lng) < 0.12);
+            if(dup){ if(dup.source === 'wiki' && it.source === 'osm'){ dup.cat = it.cat; dup.blurb = it.blurb; dup.q = it.q; } return; }
+            out.push(it);
+        });
+        return out;
+    }
+    function minRouteOff(lat, lng){
+        let best = Infinity;
+        TRIP.days.forEach(d=>{ const o = distToPolylineMi(lat, lng, d.waypoints); if(o < best) best = o; });
+        return best;
+    }
+    function guessDayId(lat, lng){
+        let best = TRIP.days[0].id, bd = Infinity;
+        TRIP.days.forEach(d=>{ const o = distToPolylineMi(lat, lng, d.waypoints); if(o < bd){ bd = o; best = d.id; } });
+        return best;
+    }
+    function addLivePlace(pl){
+        custom.own = custom.own || [];
+        if(custom.own.some(o=> o.id === pl.id)) return false;
+        custom.own.push({ id:pl.id, name:pl.name, day:guessDayId(pl.lat,pl.lng), cat:pl.cat, blurb:pl.blurb || 'Discovered en route.', q:pl.q || pl.name, lat:pl.lat, lng:pl.lng, own:true, source:pl.source });
+        saveCustom();
+        return true;
+    }
+    function rerenderUpNext(){ if(UP.pos) renderUpNext(computeUpNext(UP.pos)); }
+    function scanLive(){
+        if(!UP.pos) return;
+        const center = UP.pos;
+        LIVE.state = 'loading'; rerenderUpNext();
+        Promise.allSettled([fetchOverpass(center.lat, center.lng), fetchWiki(center.lat, center.lng)]).then(rs=>{
+            let items = [];
+            rs.forEach(r=>{ if(r.status === 'fulfilled') items = items.concat(r.value); });
+            items.forEach(it=>{ it.dist = haversineMi(center.lat, center.lng, it.lat, it.lng); it.off = minRouteOff(it.lat, it.lng); });
+            items = dedupeLive(items.filter(it=> it.off <= LIVE_CORRIDOR_MI)).sort((a,b)=> a.dist - b.dist).slice(0, LIVE_MAX);
+            LIVE.items = items;
+            if(rs.every(r=> r.status === 'rejected')) LIVE.state = 'error';
+            else LIVE.state = items.length ? 'done' : 'empty';
+            rerenderUpNext();
+        });
+    }
+    function renderLiveInto(listEl){
+        listEl.appendChild(el('<div class="live-divider">\u2728 Live along your route</div>'));
+        if(LIVE.state === 'idle'){ listEl.appendChild(el('<div class="live-note">Tap <b>\u2728 Scan live</b> to pull free nearby places from OpenStreetMap + Wikipedia along your corridor.</div>')); return; }
+        if(LIVE.state === 'loading'){ listEl.appendChild(el('<div class="live-note">Scanning OpenStreetMap + Wikipedia\u2026</div>')); return; }
+        if(LIVE.state === 'error'){ listEl.appendChild(el('<div class="live-note err">Couldn\u2019t reach the live sources \u2014 try again in a moment.</div>')); return; }
+        if(LIVE.state === 'empty'){ listEl.appendChild(el('<div class="live-note">No live places found right on this stretch of route.</div>')); return; }
+        LIVE.items.forEach(pl=>{
+            const cat = POI_CATS[pl.cat] || { color:'#64748b', emoji:'\uD83D\uDCCD', label:'Place' };
+            const added = (custom.own || []).some(o=> o.id === pl.id);
+            const dt = detourNoteFor(pl.lat, pl.lng, guessDayId(pl.lat, pl.lng), POI_DWELL[pl.cat] || 30);
+            const mapHref = pl.url || gmaps(pl.q || pl.name);
+            const row = el('<div class="un-poi">'
+                + '<div class="up-ic" style="background:'+cat.color+'22">'+cat.emoji+'</div>'
+                + '<div style="flex:1;min-width:0">'
+                    + '<h5>'+pl.name+'</h5>'
+                    + '<div class="up-tags"><span class="un-dist">'+fmtMi(pl.dist)+'</span>'
+                        + '<span class="src-badge '+(pl.source === 'osm' ? 'osm' : 'wiki')+'">'+(pl.source === 'osm' ? 'OSM' : 'Wikipedia')+'</span>'
+                        + '<span class="tag" style="background:'+cat.color+'1f;color:'+cat.color+'">'+cat.label+'</span>'
+                        + (dt ? '<span class="detour-chip" title="~'+fmtMins(dt.drive)+' extra driving">\u21A9\uFE0F +'+fmtMins(dt.drive)+'</span>' : '')
+                    + '</div>'
+                    + '<div class="up-blurb">'+(pl.blurb || '')+'</div>'
+                    + '<div class="up-act">'
+                        + '<button class="add-btn'+(added ? ' added' : '')+'" data-live-add="1">'+(added ? '\u2713 Added' : '\uFF0B Add to trip')+'</button>'
+                        + '<a class="mini-link" target="_blank" rel="noopener" href="'+mapHref+'">'+(pl.source === 'wiki' ? '\uD83D\uDCD6 Wiki' : '\uD83D\uDCCD Maps')+'</a>'
+                    + '</div>'
+                + '</div>'
+            + '</div>');
+            row.querySelector('[data-live-add]').addEventListener('click', (e)=>{
+                const ok = addLivePlace(pl);
+                const b = e.currentTarget; b.classList.add('added'); b.textContent = '\u2713 Added';
+                if(ok && typeof refreshCustomUI === 'function') refreshCustomUI();
+            });
+            listEl.appendChild(row);
+        });
+    }
+
+    /* ============================================================
+       STATE SYNC CORE  ·  one JSON snapshot of all stores.
+       Powers: export file, share-link, and Google Drive sync.
+       Strategy: last-write-wins on the whole snapshot via updatedAt.
+       ============================================================ */
+    const SYNC_VERSION = 1;
+    const SYNC_STAMP_KEY = 'sd-sync-stamp-v1';
+    const STORE_KEYS = {
+        start:    'sd-trip-start-v1',
+        nights:   'sd-sd-nights-v1',
+        custom:   'sd-custom-v1',
+        progress: 'sd-expedition-progress-v1',
+        plan:     'sd-planning-v1',
+        unified:  'sd.unified'
+    };
+    function touchSync(){
+        try { localStorage.setItem(SYNC_STAMP_KEY, String(Date.now())); } catch(e){}
+        try { document.dispatchEvent(new Event('trip:changed')); } catch(e){}
+    }
+    function syncStamp(){ var v; try { v = parseInt(localStorage.getItem(SYNC_STAMP_KEY), 10); } catch(e){} return isNaN(v) ? 0 : v; }
+    function serializeState(){
+        var data = {};
+        for(var k in STORE_KEYS){ var v = null; try { v = localStorage.getItem(STORE_KEYS[k]); } catch(e){} if(v != null) data[k] = v; }
+        return { app:'sd-roadtrip', v:SYNC_VERSION, updatedAt: syncStamp() || Date.now(), data:data };
+    }
+    function applyState(snap){
+        if(!snap || !snap.data) return false;
+        for(var k in STORE_KEYS){
+            if(Object.prototype.hasOwnProperty.call(snap.data, k) && snap.data[k] != null){
+                try { localStorage.setItem(STORE_KEYS[k], snap.data[k]); } catch(e){}
+            }
+        }
+        try { localStorage.setItem(SYNC_STAMP_KEY, String(snap.updatedAt || Date.now())); } catch(e){}
+        return true;
+    }
+    // URL-safe base64 (unicode aware) for share links
+    function b64encode(s){ return btoa(unescape(encodeURIComponent(s))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,''); }
+    function b64decode(s){ s = s.replace(/-/g,'+').replace(/_/g,'/'); while(s.length % 4) s += '='; return decodeURIComponent(escape(atob(s))); }
+
+    function exportBackup(){
+        var json = JSON.stringify(serializeState(), null, 2);
+        var blob = new Blob([json], { type:'application/json' });
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = url; a.download = 'san-diego-trip-' + isoDate(new Date()) + '.json';
+        document.body.appendChild(a); a.click(); a.remove();
+        setTimeout(function(){ URL.revokeObjectURL(url); }, 1000);
+    }
+    function importBackupFile(file){
+        var r = new FileReader();
+        r.onload = function(){
+            var snap = null; try { snap = JSON.parse(r.result); } catch(e){}
+            if(!snap || snap.app !== 'sd-roadtrip'){ alert('That file doesn\u2019t look like a saved trip plan.'); return; }
+            if(!confirm('Restore this trip plan? It replaces what\u2019s saved on this device.')) return;
+            applyState(snap); location.reload();
+        };
+        r.readAsText(file);
+    }
+    function buildShareLink(){ return location.origin + location.pathname + location.search + '#trip=' + b64encode(JSON.stringify(serializeState())); }
+    function copyShareLink(){
+        var link = buildShareLink();
+        if(navigator.clipboard && navigator.clipboard.writeText){
+            return navigator.clipboard.writeText(link).then(function(){ return true; }).catch(function(){ window.prompt('Copy this link:', link); return false; });
+        }
+        window.prompt('Copy this link:', link); return Promise.resolve(false);
+    }
+    function maybeImportFromHash(){
+        var m = (location.hash || '').match(/^#trip=(.+)$/);
+        if(!m) return false;
+        var snap = null; try { snap = JSON.parse(b64decode(m[1])); } catch(e){}
+        var valid = !!(snap && snap.app === 'sd-roadtrip');
+        if(valid && confirm('Load this shared trip plan? It replaces what\u2019s saved on this device.')){
+            applyState(snap);
+            try { history.replaceState(null, '', location.pathname + location.search); } catch(e){}
+            location.reload(); return true;
+        }
+        try { history.replaceState(null, '', location.pathname + location.search); } catch(e){}
+        return false;
+    }
+    function setupSync(){
+        var wrap = document.getElementById('syncWrap'), btn = document.getElementById('syncBtn'), menu = document.getElementById('syncMenu');
+        if(!wrap || !btn || !menu) return;
+        function close(){ menu.hidden = true; btn.setAttribute('aria-expanded','false'); }
+        btn.addEventListener('click', function(e){ e.stopPropagation(); var open = menu.hidden; menu.hidden = !open; btn.setAttribute('aria-expanded', open ? 'true' : 'false'); });
+        document.addEventListener('click', function(e){ if(!wrap.contains(e.target)) close(); });
+        document.getElementById('syncExport').addEventListener('click', function(){ exportBackup(); close(); });
+        var fileInput = document.getElementById('syncFile');
+        document.getElementById('syncImport').addEventListener('click', function(){ fileInput.click(); });
+        fileInput.addEventListener('change', function(){ if(fileInput.files[0]) importBackupFile(fileInput.files[0]); });
+        document.getElementById('syncShare').addEventListener('click', function(){
+            var el = this;
+            copyShareLink().then(function(ok){ el.textContent = ok ? '\uD83D\uDD17  Link copied to clipboard' : '\uD83D\uDD17  Copy share link'; setTimeout(function(){ el.textContent = '\uD83D\uDD17  Copy share link'; }, 1800); });
+        });
+        document.getElementById('syncDrive').addEventListener('click', function(){ if(window.TripDrive) window.TripDrive.connect(); });
+        // Drive module updates this to reflect connection state
+        window.__syncStatus = function(state, label, extra){
+            extra = extra || {};
+            var dot = document.getElementById('syncDot'), lab = document.getElementById('syncLabel'), driveBtn = document.getElementById('syncDrive'), note = document.getElementById('syncNote');
+            if(dot) dot.className = 'sync-dot' + (state === 'on' ? ' on' : state === 'busy' ? ' busy' : state === 'err' ? ' err' : '');
+            if(lab && label) lab.textContent = label;
+            if(driveBtn && extra.drive) driveBtn.textContent = extra.drive;
+            if(note && extra.note) note.textContent = extra.note;
+        };
+    }
+    window.TripSync = { serialize: serializeState, applyState: applyState, snapshotString: function(){ return JSON.stringify(serializeState()); }, stamp: syncStamp, touch: touchSync };
+
     function boot(){
+        if(maybeImportFromHash()) return;   // shared link adopted → reloads
         mergeExtras();
         renderNav();
         renderContent();
         selectView('overview');
+        setupSync();
 
         // weather widget loader
         !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src='https://weatherwidget.io/js/widget.min.js';fjs.parentNode.insertBefore(js,fjs);}}(document,'script','weatherwidget-io-js');
@@ -3293,6 +3637,7 @@
         document.getElementById('unClose').addEventListener('click', closeUpNext);
         document.getElementById('upnextScrim').addEventListener('click', closeUpNext);
         document.getElementById('unRefresh').addEventListener('click', ()=> locateUpNext(true));
+        document.getElementById('unScan').addEventListener('click', ()=>{ if(!UP.pos){ locateUpNext(false); } scanLive(); });
         document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') closeUpNext(); });
 
         // keyboard: arrow keys move between legs
@@ -3373,6 +3718,140 @@
         mountToggle();
         applyFlag(readFlag());
         window.__uBindMagnets(document);
+    })();
+    </script>
+
+    <script>
+    /* ============================================================
+       GOOGLE DRIVE SYNC  ·  appDataFolder, client-side OAuth (GIS)
+       --------------------------------------------------------------
+       ONE-TIME SETUP (personal Gmail is fine):
+         1. console.cloud.google.com → create a project (free)
+         2. Enable the "Google Drive API"
+         3. APIs & Services → Credentials → Create OAuth client ID
+            → type: Web application
+         4. Add this page's origin to "Authorized JavaScript origins"
+            (your GitHub Pages origin + http://localhost:<port> for testing)
+         5. OAuth consent screen → add scope .../auth/drive.appdata,
+            add yourself (+ companions) as Test users
+         6. Paste the client ID into CLIENT_ID below, reload, click "Sign in to sync"
+       The client ID is public by design — there is no secret to leak.
+       Trip state lives in a hidden, app-private folder in the user's own Drive.
+       ============================================================ */
+    (function () {
+        'use strict';
+        var CLIENT_ID = '633600620158-jsgj4pghqhpdd2909c39tcmppmgo5haa.apps.googleusercontent.com';
+        var SCOPE = 'https://www.googleapis.com/auth/drive.appdata';
+        var FILE_NAME = 'trip-state.json';
+        var FLAG = 'sd-drive-on';
+        var token = null, tokenClient = null, gisLoaded = false, fileId = null, debounce = 0;
+
+        function configured(){ return CLIENT_ID.indexOf('__PASTE') !== 0; }
+        function status(state, label, extra){ if (window.__syncStatus) window.__syncStatus(state, label, extra || {}); }
+        function authHeader(){ return { 'Authorization': 'Bearer ' + token }; }
+
+        function loadGis(cb){
+            if (gisLoaded && window.google && google.accounts && google.accounts.oauth2) { cb(); return; }
+            var s = document.getElementById('gis-script');
+            function ready(){ gisLoaded = true; cb(); }
+            if (s) { s.addEventListener('load', ready); return; }
+            s = document.createElement('script');
+            s.id = 'gis-script'; s.src = 'https://accounts.google.com/gsi/client'; s.async = true; s.defer = true;
+            s.onload = ready;
+            s.onerror = function(){ status('err', 'Save', { drive: '☁️  Drive unavailable (offline?)' }); };
+            document.head.appendChild(s);
+        }
+        function initTokenClient(){
+            if (tokenClient) return;
+            tokenClient = google.accounts.oauth2.initTokenClient({
+                client_id: CLIENT_ID, scope: SCOPE,
+                callback: function (resp){
+                    if (resp && resp.access_token) { token = resp.access_token; onAuthed(); }
+                    else status('err', 'Save', { drive: '☁️  Sign-in failed — retry' });
+                }
+            });
+        }
+        function requestToken(silent){
+            initTokenClient();
+            status('busy', 'Connecting…');
+            try { tokenClient.requestAccessToken({ prompt: silent ? '' : 'consent' }); }
+            catch (e) { status('err', 'Save'); }
+        }
+        function findFile(){
+            return fetch('https://www.googleapis.com/drive/v3/files?spaces=appDataFolder&fields=files(id)&q=' + encodeURIComponent("name='" + FILE_NAME + "'"), { headers: authHeader() })
+                .then(function (r){ return r.json(); })
+                .then(function (j){ var f = j.files && j.files[0]; fileId = f ? f.id : null; return f || null; });
+        }
+        function download(id){
+            return fetch('https://www.googleapis.com/drive/v3/files/' + id + '?alt=media', { headers: authHeader() }).then(function (r){ return r.json(); });
+        }
+        function upload(snapStr){
+            if (fileId){
+                return fetch('https://www.googleapis.com/upload/drive/v3/files/' + fileId + '?uploadType=media', {
+                    method: 'PATCH', headers: Object.assign({ 'Content-Type': 'application/json' }, authHeader()), body: snapStr });
+            }
+            var boundary = '----trip' + Date.now();
+            var meta = { name: FILE_NAME, parents: ['appDataFolder'] };
+            var body = '--' + boundary + '\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n' + JSON.stringify(meta) +
+                '\r\n--' + boundary + '\r\nContent-Type: application/json\r\n\r\n' + snapStr + '\r\n--' + boundary + '--';
+            return fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id', {
+                method: 'POST', headers: Object.assign({ 'Content-Type': 'multipart/related; boundary=' + boundary }, authHeader()), body: body })
+                .then(function (r){ return r.json(); }).then(function (j){ if (j.id) fileId = j.id; return j; });
+        }
+        function pushLocal(){
+            if (!token || !window.TripSync) return Promise.resolve();
+            status('busy', 'Saving…');
+            return upload(window.TripSync.snapshotString())
+                .then(function(){ status('on', 'Synced', { drive: '☁️  Disconnect Drive', note: 'Synced to your Google Drive (appData).' }); })
+                .catch(function(){ status('err', 'Save', { drive: '☁️  Sync failed — retry' }); });
+        }
+        function onAuthed(){
+            try { localStorage.setItem(FLAG, '1'); } catch (e){}
+            status('busy', 'Syncing…');
+            findFile().then(function (f){
+                if (!f) return pushLocal();
+                return download(fileId).then(function (remote){
+                    var local = window.TripSync ? window.TripSync.stamp() : 0;
+                    var rstamp = remote && remote.updatedAt ? remote.updatedAt : 0;
+                    if (remote && remote.app === 'sd-roadtrip' && rstamp > local){
+                        window.TripSync.applyState(remote); location.reload();   // remote newer → adopt
+                    } else {
+                        return pushLocal();                                       // local newer/equal → push
+                    }
+                });
+            }).catch(function(){ status('err', 'Save', { drive: '☁️  Sync failed — retry' }); });
+        }
+        function connect(){
+            if (!configured()){
+                alert('Google Drive sync needs a one-time setup:\n\n' +
+                      '1. console.cloud.google.com → create a project\n' +
+                      '2. Enable the Google Drive API\n' +
+                      '3. Credentials → Create OAuth client ID → Web application\n' +
+                      '4. Add this origin to Authorized JavaScript origins:\n     ' + location.origin + '\n' +
+                      '5. Add scope .../auth/drive.appdata + yourself as a Test user\n' +
+                      '6. Paste the client ID into CLIENT_ID in index.html, reload\n\n' +
+                      'The client ID is public — there is no secret to leak.');
+                return;
+            }
+            loadGis(function(){ requestToken(false); });
+        }
+        function disconnect(){
+            token = null; fileId = null;
+            try { localStorage.removeItem(FLAG); } catch (e){}
+            status('idle', 'Save', { drive: '☁️  Sign in to sync', note: 'Saved only in this browser until you connect Drive.' });
+        }
+        document.addEventListener('trip:changed', function(){
+            if (!token) return;
+            clearTimeout(debounce);
+            debounce = setTimeout(pushLocal, 1500);
+        });
+        window.TripDrive = { connect: function(){ if (token) disconnect(); else connect(); }, configured: configured };
+
+        function autoReconnect(){
+            var on = false; try { on = localStorage.getItem(FLAG) === '1'; } catch (e){}
+            if (on && configured()) loadGis(function(){ requestToken(true); });
+        }
+        if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', autoReconnect); else autoReconnect();
     })();
     </script>
 </body>
