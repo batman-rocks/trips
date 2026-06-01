@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trips · 2026</title>
+<meta name="description" content="Trip planning hub — every itinerary in one place.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Newsreader:ital,opsz,wght@0,6..72,400;1,6..72,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:        #f6f4ef;
+    --bg-2:      #efece4;
+    --surface:   #ffffff;
+    --ink:       #1a1330;
+    --dim:       #5b5673;
+    --faint:     #8e89a3;
+    --rule:      rgba(26,19,48,0.08);
+    --rule-2:    rgba(26,19,48,0.16);
+    --brand:      #b45309;
+    --brand-soft: rgba(180,83,9,0.12);
+    --brand-wash: rgba(180,83,9,0.06);
+    --good:      #059669;
+    --accent:    #6d28d9;
+    --accent-soft: rgba(109,40,217,0.08);
+    --radius:    18px;
+    --radius-sm: 12px;
+    --glass-bg:     rgba(255,255,255,0.74);
+    --glass-border: 1px solid rgba(26,19,48,0.07);
+    --glass-blur:   blur(20px) saturate(165%);
+    --shadow-sm: 0 1px 2px rgba(26,19,48,0.05), 0 4px 14px -8px rgba(26,19,48,0.18);
+    --shadow:    0 16px 44px -20px rgba(26,19,48,0.32), 0 3px 10px -6px rgba(26,19,48,0.14);
+    --sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --serif: 'Newsreader', 'Iowan Old Style', Georgia, serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: var(--sans);
+    background:
+      radial-gradient(1100px 620px at 86% -10%, var(--brand-soft), transparent 60%),
+      radial-gradient(900px 520px at -6% 108%, var(--accent-soft), transparent 55%),
+      var(--bg);
+    color: var(--ink);
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    min-height: 100dvh;
+  }
+  .tnum { font-variant-numeric: tabular-nums; }
+
+  .command-bar {
+    position: sticky; top: 0; z-index: 40;
+    display: flex; align-items: center; gap: 16px;
+    padding: 14px clamp(18px, 4vw, 40px);
+    background: var(--glass-bg);
+    -webkit-backdrop-filter: var(--glass-blur);
+    backdrop-filter: var(--glass-blur);
+    border-bottom: var(--glass-border);
+    box-shadow: 0 1px 0 rgba(255,255,255,0.6) inset, 0 8px 28px -20px rgba(26,19,48,0.5);
+  }
+  .glyph {
+    width: 40px; height: 40px; flex-shrink: 0; border-radius: 12px;
+    display: grid; place-items: center; color: #fff;
+    background: linear-gradient(145deg, var(--accent), var(--brand));
+    box-shadow: var(--shadow-sm);
+  }
+  .glyph svg { width: 22px; height: 22px; }
+  .brand-text h1 { font-size: 1.02rem; font-weight: 800; letter-spacing: -0.02em; line-height: 1.1; }
+  .brand-text p { font-size: 0.74rem; color: var(--faint); font-weight: 500; }
+  .spacer { flex: 1; }
+  .count { text-align: right; line-height: 1.15; }
+  .count .v { font-size: 1.1rem; font-weight: 800; letter-spacing: -0.02em; }
+  .count .k { font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--faint); font-weight: 800; }
+
+  .wrap { max-width: 980px; margin: 0 auto; padding: clamp(26px, 5vw, 52px) clamp(16px, 4vw, 40px) 80px; }
+  .lede-block { margin-bottom: 30px; }
+  .eyebrow { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.16em; color: var(--brand); font-weight: 800; }
+  .lede-block h2 { font-family: var(--serif); font-size: clamp(2rem, 5vw, 2.9rem); line-height: 1.04; letter-spacing: -0.01em; margin: 8px 0 10px; }
+  .lede-block p { color: var(--dim); font-size: 1.02rem; max-width: 56ch; }
+
+  .group-label { font-variant: all-small-caps; letter-spacing: 0.08em; font-size: 0.84rem; font-weight: 800; color: var(--faint); margin: 26px 0 10px; }
+
+  .trips { display: flex; flex-direction: column; gap: 14px; }
+  .trip {
+    display: grid; grid-template-columns: 64px 1fr auto; align-items: center; gap: 20px;
+    text-decoration: none; color: inherit;
+    background: var(--surface); border: 1px solid var(--rule); border-radius: var(--radius);
+    padding: 18px 22px; box-shadow: var(--shadow-sm);
+    transition: transform .2s cubic-bezier(.2,.7,.3,1), box-shadow .2s, border-color .2s;
+    will-change: transform;
+  }
+  .trip:hover { box-shadow: var(--shadow); border-color: var(--rule-2); }
+  .trip:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+  .badge {
+    width: 64px; height: 64px; border-radius: 14px; flex-shrink: 0;
+    display: grid; place-items: center; color: #fff;
+    box-shadow: var(--shadow-sm);
+  }
+  .badge svg { width: 30px; height: 30px; }
+  .badge.coast { background: linear-gradient(150deg, #0ea5e9, #2563eb); }
+  .badge.rock  { background: linear-gradient(150deg, #dc2626, #b91c1c); }
+
+  .trip-body { min-width: 0; }
+  .trip-body h3 { font-size: 1.14rem; font-weight: 800; letter-spacing: -0.01em; }
+  .trip-body .route { font-size: 0.9rem; color: var(--dim); margin-top: 2px; }
+  .trip-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 9px; }
+  .tag { font-variant: all-small-caps; letter-spacing: 0.06em; font-size: 0.74rem; font-weight: 800; padding: 1px 9px; border-radius: 99px; color: var(--dim); background: var(--bg-2); }
+  .tag.date { color: var(--brand); background: var(--brand-wash); }
+  .tag.type { color: var(--accent); background: var(--accent-soft); }
+
+  .trip-go { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+  .trip-when { text-align: right; line-height: 1.1; }
+  .trip-when .d { font-size: 1.04rem; font-weight: 800; letter-spacing: -0.02em; }
+  .trip-when .m { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--faint); font-weight: 800; }
+  .arrow { width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; color: var(--faint); border: 1px solid var(--rule-2); transition: all .2s; }
+  .trip:hover .arrow { color: #fff; background: var(--brand); border-color: var(--brand); transform: translateX(2px); }
+  .arrow svg { width: 16px; height: 16px; }
+  @media (max-width: 640px) {
+    .trip { grid-template-columns: 52px 1fr; }
+    .badge { width: 52px; height: 52px; }
+    .trip-go { grid-column: 1 / -1; justify-content: space-between; }
+  }
+
+  .note {
+    margin-top: 22px; display: flex; gap: 12px; align-items: flex-start;
+    background: var(--brand-wash); border: 1px solid var(--rule); border-radius: var(--radius-sm);
+    padding: 14px 16px; font-size: 0.88rem; color: var(--dim);
+  }
+  .note svg { width: 18px; height: 18px; flex-shrink: 0; color: var(--brand); margin-top: 2px; }
+  .note strong { color: var(--ink); }
+
+  footer { text-align: center; color: var(--faint); font-size: 0.78rem; margin-top: 54px; }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; scroll-behavior: auto; } }
+</style>
+</head>
+<body>
+  <header class="command-bar">
+    <div class="glyph" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2z"/><path d="M9 4v14M15 6v14"/>
+      </svg>
+    </div>
+    <div class="brand-text">
+      <h1>Trips</h1>
+      <p>Planning hub</p>
+    </div>
+    <div class="spacer"></div>
+    <div class="count"><div class="v tnum">2</div><div class="k">on the board</div></div>
+  </header>
+
+  <div class="wrap">
+    <div class="lede-block">
+      <div class="eyebrow">2026 · itineraries</div>
+      <h2>Where we're headed</h2>
+      <p>Every trip in one place. Tap a card to open its full planner — route, run of day, packing, and maps.</p>
+    </div>
+
+    <div class="group-label">June 2026</div>
+    <div class="trips">
+
+      <a class="trip magnetic" href="2026/red-rocks-concert-june-14/index.html">
+        <div class="badge rock" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 20l5-9 4 5 3-4 6 8z"/><circle cx="17" cy="6" r="2"/>
+          </svg>
+        </div>
+        <div class="trip-body">
+          <h3>Red Rocks Concert Night</h3>
+          <div class="route">Trevor Hall, Thievery Corporation &amp; Dirtwire · Morrison, CO</div>
+          <div class="trip-tags">
+            <span class="tag date">Jun 14 · 5:30 PM</span>
+            <span class="tag type">day trip</span>
+            <span class="tag">3 × GA</span>
+          </div>
+        </div>
+        <div class="trip-go">
+          <div class="trip-when"><div class="d tnum">14</div><div class="m">Jun</div></div>
+          <span class="arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+        </div>
+      </a>
+
+      <a class="trip magnetic" href="2026/san-diego-road-trip/index.html">
+        <div class="badge coast" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 18c2 0 2-1.5 4-1.5S9 18 11 18s2-1.5 4-1.5S17 18 19 18s2-1.5 2-1.5"/>
+            <path d="M3 13c2 0 2-1.5 4-1.5S9 13 11 13"/><circle cx="17" cy="7" r="3"/>
+          </svg>
+        </div>
+        <div class="trip-body">
+          <h3>Mountain to Coast Expedition</h3>
+          <div class="route">Colorado Springs → La Jolla, California</div>
+          <div class="trip-tags">
+            <span class="tag date">Jun 25–28</span>
+            <span class="tag type">4-day road trip</span>
+            <span class="tag">scenic overland</span>
+          </div>
+        </div>
+        <div class="trip-go">
+          <div class="trip-when"><div class="d tnum">25</div><div class="m">Jun</div></div>
+          <span class="arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+        </div>
+      </a>
+
+    </div>
+
+    <footer>Trip planning hub · 2026</footer>
+  </div>
+
+  <script>
+  (function () {
+    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    var cards = document.querySelectorAll('.magnetic');
+    cards.forEach(function (el) {
+      var raf = null;
+      function move(e) {
+        if (raf) return;
+        raf = requestAnimationFrame(function () {
+          raf = null;
+          var r = el.getBoundingClientRect();
+          var dx = (e.clientX - (r.left + r.width / 2)) / r.width;
+          var dy = (e.clientY - (r.top + r.height / 2)) / r.height;
+          el.style.transform = 'translate(' + (dx * 6).toFixed(2) + 'px,' + (dy * 5).toFixed(2) + 'px) rotateX(' + (-dy * 1.4).toFixed(2) + 'deg) rotateY(' + (dx * 1.4).toFixed(2) + 'deg)';
+        });
+      }
+      function reset() { el.style.transform = ''; }
+      el.addEventListener('mousemove', move);
+      el.addEventListener('mouseleave', reset);
+    });
+  })();
+  </script>
+</body>
+</html>

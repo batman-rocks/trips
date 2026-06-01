@@ -779,7 +779,10 @@
         .sync-dot.on { background: #16a34a; }
         .sync-dot.busy { background: #d97706; animation: syncPulse 1s ease-in-out infinite; }
         .sync-dot.err { background: #dc2626; }
+        .sync-dot.expired { background: #d97706; animation: syncPulse 1.4s ease-in-out infinite; }
         @keyframes syncPulse { 0%,100%{opacity:1} 50%{opacity:.3} }
+        .sync-btn.attention { background: rgba(217,119,6,0.13); border-color: rgba(217,119,6,0.45); color: #b45309; font-weight: 800; }
+        body.unified .sync-btn.attention { background: rgba(180,83,9,0.12); border-color: var(--t-route-soft); color: var(--t-route); }
         .sync-menu { position: absolute; right: 0; top: calc(100% + 9px); width: 256px; background: #fff; border: 1px solid var(--rule, #e5e7eb); border-radius: 13px; box-shadow: 0 20px 50px rgba(15,23,42,0.20); padding: 7px; z-index: 80; }
         .sync-menu[hidden] { display: none; }
         .sync-sec { font-size: 10px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted, #94a3b8); padding: 8px 8px 4px; }
@@ -813,7 +816,7 @@
 
         <div class="date-control">
             <label for="tripStart">Departure</label>
-            <input type="date" id="tripStart" value="2026-06-13">
+            <input type="date" id="tripStart" value="2026-06-25">
         </div>
 
         <div class="date-control">
@@ -1462,7 +1465,7 @@
        TRIP DATE  +  SUN / GOLDEN-HOUR / MOON ENGINE  (no APIs)
        ============================================================ */
     const SKEY = 'sd-trip-start-v1';
-    const DEFAULT_START = '2026-06-13';
+    const DEFAULT_START = '2026-06-25';
     function getTripStart(){
         let s = null; try { s = localStorage.getItem(SKEY); } catch(e){}
         return new Date((s || DEFAULT_START) + 'T12:00:00');
@@ -3586,8 +3589,9 @@
         // Drive module updates this to reflect connection state
         window.__syncStatus = function(state, label, extra){
             extra = extra || {};
-            var dot = document.getElementById('syncDot'), lab = document.getElementById('syncLabel'), driveBtn = document.getElementById('syncDrive'), note = document.getElementById('syncNote');
-            if(dot) dot.className = 'sync-dot' + (state === 'on' ? ' on' : state === 'busy' ? ' busy' : state === 'err' ? ' err' : '');
+            var dot = document.getElementById('syncDot'), lab = document.getElementById('syncLabel'), driveBtn = document.getElementById('syncDrive'), note = document.getElementById('syncNote'), btn = document.getElementById('syncBtn');
+            if(dot) dot.className = 'sync-dot' + (state === 'on' ? ' on' : state === 'busy' ? ' busy' : state === 'err' ? ' err' : state === 'expired' ? ' expired' : '');
+            if(btn) btn.classList.toggle('attention', state === 'expired');
             if(lab && label) lab.textContent = label;
             if(driveBtn && extra.drive) driveBtn.textContent = extra.drive;
             if(note && extra.note) note.textContent = extra.note;
@@ -3813,7 +3817,7 @@
         }
         function expiredAuth(){
             clearToken();
-            status('idle', 'Save', { drive: '☁️  Sign in to sync', note: 'Drive session expired — tap to reconnect.' });
+            status('expired', 'Reconnect', { drive: '☁️  Reconnect Drive', note: 'Drive session expired — tap to reconnect.' });
         }
         function pushLocal(){
             if (!token || !window.TripSync) return Promise.resolve();
