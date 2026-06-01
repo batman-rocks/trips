@@ -104,10 +104,19 @@
             document.getElementById('statusUpdate').innerText = "Ranking live inventory...";
 
             for(let fac of facilities) {
-                const liveUrl = `${proxy}https://www.recreation.gov/api/camping/campgrounds/${fac.FacilityID}/month?start_date=${month}-01T00%3A00%3A00.000Z`;
+                // The exact target URL we want to hit
+                const targetUrl = `https://www.recreation.gov/api/camping/campgrounds/${fac.FacilityID}/month?start_date=${month}-01T00:00:00.000Z`;
+                
+                // Wrapping it in the allorigins proxy and encoding the URL so the firewall doesn't break it
+                const liveUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`;
                 
                 try {
-                    const response = await fetch(liveUrl, { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
+                    const response = await fetch(liveUrl, { 
+                        headers: { 
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Accept': 'application/json'
+                        } 
+                    });
                     if(response.ok) {
                         const data = await response.json();
                         processAndRankSites(fac.FacilityName, data.campsites, isWeekendOnly, displayArea);
@@ -118,6 +127,7 @@
             }
             document.getElementById('statusUpdate').innerText = "Scan complete!";
         }
+        
 
         function processAndRankSites(campName, campsites, weekendOnly, container) {
             if(!campsites) return;
