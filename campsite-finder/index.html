@@ -107,7 +107,8 @@
                 const targetUrl = `https://www.recreation.gov/api/camping/campgrounds/${fac.FacilityID}/month?start_date=${month}-01T00:00:00.000Z`;
                 
                 // Using CodeTabs proxy to attempt to bypass the WAF
-                const liveUrl = `https://api.codetabs.com/v1/proxy?quest=${targetUrl}`;
+                const liveUrl = `https://camp-proxy.rbector.workers.dev/?url=${encodeURIComponent(targetUrl)}`;
+                
                 
                 try {
                     // Stripped custom headers to avoid triggering CORS preflight flags
